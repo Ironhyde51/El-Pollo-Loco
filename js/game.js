@@ -2,14 +2,31 @@ let canvas;
 let ctx;
 let world;
 let keyboard = new Keyboard();
+let gameStarted = false;
 
-function init(){
+function startGame() {
+    if (gameStarted) {
+        return;
+    }
+
+    gameStarted = true;
+    document.getElementById("startScreen").classList.add("d-none");
+    init();
+}
+
+function init() {
+    initLevel1();
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     world = new World(canvas, keyboard);
 }
 
 document.addEventListener("keydown", (event) => {
+    if (event.key == " " && !gameStarted) {
+        event.preventDefault();
+        startGame();
+        return;
+    }
     
     if(event.key == "ArrowRight"){
         keyboard.RIGHT = true;

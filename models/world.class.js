@@ -12,6 +12,7 @@ class World {
     bottleWasThrown = false;
     collectedCoins = 0;
     collectedBottles = 0;
+    maxBottles = 0;
 
 
 
@@ -19,6 +20,7 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.maxBottles = this.level.bottles.length;
         this.draw();
         this.setWorld();
         this.checkCollisions();
@@ -56,6 +58,12 @@ class World {
                         bottle.splash();
                     }
                 });
+            });
+
+            this.level.bottleBoxes.forEach((bottleBox) => {
+                if (this.isCollidingWithOffset(this.character, bottleBox)) {
+                    this.collectBottleBox(bottleBox);
+                }
             });
 
             this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
@@ -101,9 +109,18 @@ class World {
     }
 
     updateBottleStatusbar() {
-        let totalBottles = this.collectedBottles + this.level.bottles.length;
-        let percentage = totalBottles === 0 ? 0 : (this.collectedBottles / totalBottles) * 100;
+        let percentage = this.maxBottles === 0 ? 0 : (this.collectedBottles / this.maxBottles) * 100;
         this.statusbarBottle.setPercentage(percentage);
+    }
+
+    collectBottleBox(bottleBox) {
+        let bottleBoxIndex = this.level.bottleBoxes.indexOf(bottleBox);
+        if (bottleBoxIndex === -1) {
+            return;
+        }
+        this.level.bottleBoxes.splice(bottleBoxIndex, 1);
+        this.collectedBottles = this.maxBottles;
+        this.updateBottleStatusbar();
     }
 
     getHitbox(object) {
@@ -117,7 +134,7 @@ class World {
 
     checkThrowObjects() {
         setInterval(() => {
-            if (this.keyboard.D && !this.bottleWasThrown) {
+            if (this.keyboard.D && !this.bottleWasThrown && this.collectedBottles > 0) {
                 this.throwBottle();
                 this.bottleWasThrown = true;
             }
@@ -134,6 +151,8 @@ class World {
         let y = this.character.y + 100;
         let bottle = new ThrowableObject(x, y, direction);
         this.throwableObjects.push(bottle);
+        this.collectedBottles--;
+        this.updateBottleStatusbar();
     }
 
     draw() {
@@ -151,6 +170,7 @@ class World {
         this.addObjectToMap(this.level.clouds);
         this.addObjectToMap(this.level.coins);
         this.addObjectToMap(this.level.bottles);
+        this.addObjectToMap(this.level.bottleBoxes);
         this.addObjectToMap(this.level.enemies);
         this.addObjectToMap(this.throwableObjects);
         this.addToMap(this.character);

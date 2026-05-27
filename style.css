@@ -4,8 +4,32 @@ body{
     align-items: center;
 }
 
-canvas{
+.game-container {
+    position: relative;
+    width: 720px;
+    height: 480px;
+}
+
+canvas {
     background-color: black;
+    display: block;
+}
+
+.start-screen {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+.start-screen img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.d-none {
+    display: none;
 }
 
 h1 {
