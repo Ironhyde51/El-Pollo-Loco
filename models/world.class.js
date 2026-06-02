@@ -8,6 +8,11 @@ class World {
     startusBar = new StatusBar();
     statusbarCoin = new StatusbarCoin();
     statusbarBottle = new StatusbarBottle();
+    statusbarEndboss = new StatusbarEndboss();
+    endbossWasSeen = false;
+    gameEnded = false;
+    endScreenImage = new Image();
+    pepeDeathFallStarted = false;
     throwableObjects = [];
     bottleWasThrown = false;
     collectedCoins = 0;
@@ -20,6 +25,10 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.gameOverImage = new Image();
+        this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
+        this.winningImage = new Image();
+        this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
         this.maxBottles = this.level.bottles.length;
         this.draw();
         this.setWorld();
@@ -31,12 +40,33 @@ class World {
         this.character.world = this;
     }
 
+    checkEndbossSeen() {
+        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss && this.character.x > endboss.x - 700) {
+            this.endbossWasSeen = true;
+        }
+
+    }
+
     checkCollisions() {
         setInterval(() => {
+            if (this.gameEnded) {
+                return;
+            }
+            this.checkEndbossSeen();
+            this.checkGameEnd();
             this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
+                if (enemy instanceof Endboss) {
+                    if (this.isCollidingWithOffset(this.character, enemy)) {        //Wenn der Gegner ein Endboss ist: Pepe bekommt Schaden bei Berührung.
+                        this.character.hit();                                       //Pepe erhält Schaden, wenn er mit dem Endboss kollidiert.
+                        this.startusBar.setPercentage(this.character.energy);       //Statusbar wird aktualisiert, um den aktuellen Energielevel von Pepe anzuzeigen.
+                    }
+                } else if (this.isJumpingOnEnemy(enemy)) {
+                    this.killEnemy(enemy);                                          //Wenn Pepe auf ein Chicken springt: Pepe tötet das Chicken und springt hoch.
+                    this.character.speedY = 15;                                     //Pepe erhält einen Aufwärts-Impuls, um den Sprung zu simulieren.    
+                } else if (this.isCollidingWithOffset(this.character, enemy)) {     //Wenn Pepe seitlich in ein Chicken läuft: Pepe bekommt Schaden.
                     this.character.hit();
-                    this.startusBar.setPercentage(this.character.energy);
+                    this.startusBar.setPercentage(this.character.energy);           //Statusbar wird aktualisiert, um den aktuellen Energielevel von Pepe anzuzeigen.
                 }
             });
 
@@ -54,7 +84,8 @@ class World {
 
             this.throwableObjects.forEach((bottle) => {
                 this.level.enemies.forEach((enemy) => {
-                    if (!bottle.isSplashing && bottle.isColliding(enemy)) {
+                    if (!bottle.isSplashing && this.isCollidingWithOffset(bottle, enemy)) {
+                        this.hitEnemyWithBottle(enemy);
                         bottle.splash();
                     }
                 });
@@ -97,6 +128,45 @@ class World {
             first.top < second.bottom;
     }
 
+    isJumpingOnEnemy(enemy) {
+        return this.character.speedY < 0 &&
+            this.character.y + this.character.height <= enemy.y + 30 &&
+            this.isCollidingWithOffset(this.character, enemy);
+    }
+
+    killEnemy(enemy) {
+        let enemyIndex = this.level.enemies.indexOf(enemy);
+        if (enemyIndex === -1) {
+            return;
+        }
+
+        this.level.enemies.splice(enemyIndex, 1);
+    }
+
+    hitEnemyWithBottle(enemy) {
+        if (enemy instanceof Endboss) {
+            this.hitEndboss(enemy);
+        } else {
+            this.killEnemy(enemy);
+        }
+    }
+
+    hitEndboss(endboss) {
+        endboss.hit();
+        this.statusbarEndboss.setPercentage(endboss.energy);
+
+        if (endboss.isDead()) {
+            this.removeDeadEndboss(endboss);
+        }
+    }
+
+    removeDeadEndboss(endboss) {
+        setTimeout(() => {
+            this.killEnemy(endboss);
+            this.showWinningScreen();
+        }, 800);
+    }
+
     collectBottle(bottle) {
         let bottleIndex = this.level.bottles.indexOf(bottle);
         if (bottleIndex === -1) {
@@ -134,6 +204,9 @@ class World {
 
     checkThrowObjects() {
         setInterval(() => {
+            if(this.gameEnded) {
+                return;
+            }
             if (this.keyboard.D && !this.bottleWasThrown && this.collectedBottles > 0) {
                 this.throwBottle();
                 this.bottleWasThrown = true;
@@ -155,7 +228,50 @@ class World {
         this.updateBottleStatusbar();
     }
 
+    checkGameEnd() {
+        if (this.gameEnded) {
+            return;
+        }
+
+        if (this.character.isDead()) {
+            this.startPepeDeathFall();
+        }
+
+        if (this.pepeDeathFallStarted && this.character.y > this.canvas.height) {
+            this.showGameOverScreen();
+        }
+    }
+
+    startPepeDeathFall() {
+        if (this.pepeDeathFallStarted) {
+            return;
+        }
+
+        this.pepeDeathFallStarted = true;
+    }
+
+    showGameOverScreen() {
+        this.gameEnded = true;
+        this.endScreenImage = this.gameOverImage;
+        this.drawEndScreen();
+    }
+
+    showWinningScreen() {
+        this.gameEnded = true;
+        this.endScreenImage = this.winningImage;
+        this.drawEndScreen();
+    }
+
     draw() {
+        if (this.gameEnded) {
+            this.drawEndScreen();
+            return;
+        }
+
+        if (this.pepeDeathFallStarted) {
+            this.character.y += 12;
+        }
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
@@ -165,6 +281,9 @@ class World {
         this.addObjectToMap([this.startusBar]);
         this.addObjectToMap([this.statusbarCoin]);
         this.addObjectToMap([this.statusbarBottle]);
+        if (this.endbossWasSeen) {
+            this.addObjectToMap([this.statusbarEndboss]);
+        }
         this.ctx.translate(this.camera_x, 0);
 
         this.addObjectToMap(this.level.clouds);
@@ -182,6 +301,14 @@ class World {
         requestAnimationFrame(function () {
             self.draw();
         });
+    }
+
+    drawEndScreen() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if (this.endScreenImage && this.endScreenImage.complete) {
+            this.ctx.drawImage(this.endScreenImage, 0, 0, this.canvas.width, this.canvas.height);
+        }
     }
 
     addObjectToMap(object) {
