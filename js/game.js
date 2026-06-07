@@ -35,6 +35,30 @@ function init() {
     world = new World(canvas, keyboard);
 }
 
+function toggleFullscreen() {
+    let gameContainer = document.querySelector(".game-container");
+
+    if (!document.fullscreenElement) {
+        gameContainer.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function updateFullscreenButton() {
+    let fullscreenButton = document.getElementById("fullscreenButton");
+
+    if (!fullscreenButton) {
+        return;
+    }
+
+    fullscreenButton.innerHTML = document.fullscreenElement ? "&times;" : "&#x26F6;";
+    fullscreenButton.title = document.fullscreenElement ? "Fullscreen beenden" : "Fullscreen umschalten";
+    fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
+}
+
+document.addEventListener("fullscreenchange", updateFullscreenButton);
+
 document.addEventListener("keydown", (event) => {
     if (event.key == " " && !gameStarted) {
         event.preventDefault();

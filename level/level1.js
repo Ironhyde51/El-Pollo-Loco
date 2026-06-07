@@ -120,7 +120,7 @@ function initLevel1() {
             new BottleBox(-500),
             new BottleBox(-350),
             new BottleBox(-200),
-            new BottleBox(-50),
+            new BottleBox(-50), 
             new BottleBox(400),
             new BottleBox(1100),
             new BottleBox(1800)

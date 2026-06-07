@@ -19,8 +19,6 @@ class World {
     collectedBottles = 0;
     maxBottles = 0;
 
-
-
     constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -45,7 +43,6 @@ class World {
         if (endboss && this.character.x > endboss.x - 700) {
             this.endbossWasSeen = true;
         }
-
     }
 
     checkCollisions() {
@@ -55,50 +52,79 @@ class World {
             }
             this.checkEndbossSeen();
             this.checkGameEnd();
+            this.checkEnemyCollisions();
+            this.checkCoinCollisions();
+            this.checkBottleCollisions();
+            this.checkBottleBoxCollisions();
+            this.checkThrowableObjectCollisions();
+            this.removeDestroyedThrowableObjects();
+        }, 50);
+    }
+
+    removeDestroyedThrowableObjects() {
+        this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
+    }
+
+    checkThrowableObjectCollisions() {
+        this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
-                if (enemy instanceof Endboss) {
-                    if (this.isCollidingWithOffset(this.character, enemy)) {        //Wenn der Gegner ein Endboss ist: Pepe bekommt Schaden bei Berührung.
-                        this.character.hit();                                       //Pepe erhält Schaden, wenn er mit dem Endboss kollidiert.
-                        this.startusBar.setPercentage(this.character.energy);       //Statusbar wird aktualisiert, um den aktuellen Energielevel von Pepe anzuzeigen.
-                    }
-                } else if (this.isJumpingOnEnemy(enemy)) {
-                    this.killEnemy(enemy);                                          //Wenn Pepe auf ein Chicken springt: Pepe tötet das Chicken und springt hoch.
-                    this.character.speedY = 15;                                     //Pepe erhält einen Aufwärts-Impuls, um den Sprung zu simulieren.    
-                } else if (this.isCollidingWithOffset(this.character, enemy)) {     //Wenn Pepe seitlich in ein Chicken läuft: Pepe bekommt Schaden.
-                    this.character.hit();
-                    this.startusBar.setPercentage(this.character.energy);           //Statusbar wird aktualisiert, um den aktuellen Energielevel von Pepe anzuzeigen.
+                if (!bottle.isSplashing && this.isCollidingWithOffset(bottle, enemy)) {
+                    this.hitEnemyWithBottle(enemy);
+                    bottle.splash();
                 }
             });
+        });
+    }
 
-            this.level.coins.forEach((coin) => {
-                if (this.isCollidingWithOffset(this.character, coin)) {
-                    this.collectCoin(coin);
-                }
-            });
+    checkBottleBoxCollisions() {
+        this.level.bottleBoxes.forEach((bottleBox) => {
+            if (this.isCollidingWithOffset(this.character, bottleBox)) {
+                this.collectBottleBox(bottleBox);
+            }
+        });
+    }
 
-            this.level.bottles.forEach((bottle) => {
-                if (this.isCollidingWithOffset(this.character, bottle)) {
-                    this.collectBottle(bottle);
-                }
-            });
+    checkBottleCollisions() {
+        this.level.bottles.forEach((bottle) => {
+            if (this.isCollidingWithOffset(this.character, bottle)) {
+                this.collectBottle(bottle);
+            }
+        });
+    }
 
-            this.throwableObjects.forEach((bottle) => {
-                this.level.enemies.forEach((enemy) => {
-                    if (!bottle.isSplashing && this.isCollidingWithOffset(bottle, enemy)) {
-                        this.hitEnemyWithBottle(enemy);
-                        bottle.splash();
-                    }
-                });
-            });
+    checkCoinCollisions() {
+        this.level.coins.forEach((coin) => {
+            if (this.isCollidingWithOffset(this.character, coin)) {
+                this.collectCoin(coin);
+            }
+        });
+    }
 
-            this.level.bottleBoxes.forEach((bottleBox) => {
-                if (this.isCollidingWithOffset(this.character, bottleBox)) {
-                    this.collectBottleBox(bottleBox);
-                }
-            });
+    checkEnemyCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (enemy instanceof Endboss) {
+                this.checkEndbossCollision(enemy);
+            } else {
+                this.checkNormalEnemyCollision(enemy);
+            }
+        });
+    }
 
-            this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
-        }, 200);
+    checkEndbossCollision(endboss) {
+        if (this.isCollidingWithOffset(this.character, endboss)) {
+            this.character.hit();
+            this.startusBar.setPercentage(this.character.energy);
+        }
+    }
+
+    checkNormalEnemyCollision(enemy) {
+        if (this.isJumpingOnEnemy(enemy)) {
+            this.killEnemy(enemy);
+            this.character.speedY = 15;
+        } else if (this.isCollidingWithOffset(this.character, enemy)) {
+            this.character.hit();
+            this.startusBar.setPercentage(this.character.energy);
+        }
     }
 
     collectCoin(coin) {
@@ -106,7 +132,6 @@ class World {
         if (coinIndex === -1) {
             return;
         }
-
         this.level.coins.splice(coinIndex, 1);
         this.collectedCoins++;
         this.updateCoinStatusbar();
@@ -121,7 +146,6 @@ class World {
     isCollidingWithOffset(firstObject, secondObject) {
         let first = this.getHitbox(firstObject);
         let second = this.getHitbox(secondObject);
-
         return first.right > second.left &&
             first.bottom > second.top &&
             first.left < second.right &&
@@ -129,8 +153,11 @@ class World {
     }
 
     isJumpingOnEnemy(enemy) {
+        let characterBottom = this.character.y + this.character.height;
+        let enemyTop = enemy.y;
         return this.character.speedY < 0 &&
-            this.character.y + this.character.height <= enemy.y + 30 &&
+            characterBottom >= enemyTop &&
+            characterBottom <= enemyTop + 45 &&
             this.isCollidingWithOffset(this.character, enemy);
     }
 
@@ -139,7 +166,6 @@ class World {
         if (enemyIndex === -1) {
             return;
         }
-
         this.level.enemies.splice(enemyIndex, 1);
     }
 
@@ -154,7 +180,6 @@ class World {
     hitEndboss(endboss) {
         endboss.hit();
         this.statusbarEndboss.setPercentage(endboss.energy);
-
         if (endboss.isDead()) {
             this.removeDeadEndboss(endboss);
         }
@@ -172,7 +197,6 @@ class World {
         if (bottleIndex === -1) {
             return;
         }
-
         this.level.bottles.splice(bottleIndex, 1);
         this.collectedBottles++;
         this.updateBottleStatusbar();
@@ -204,14 +228,13 @@ class World {
 
     checkThrowObjects() {
         setInterval(() => {
-            if(this.gameEnded) {
+            if (this.gameEnded) {
                 return;
             }
             if (this.keyboard.D && !this.bottleWasThrown && this.collectedBottles > 0) {
                 this.throwBottle();
                 this.bottleWasThrown = true;
             }
-
             if (!this.keyboard.D) {
                 this.bottleWasThrown = false;
             }
@@ -232,11 +255,9 @@ class World {
         if (this.gameEnded) {
             return;
         }
-
         if (this.character.isDead()) {
             this.startPepeDeathFall();
         }
-
         if (this.pepeDeathFallStarted && this.character.y > this.canvas.height) {
             this.showGameOverScreen();
         }
@@ -246,7 +267,6 @@ class World {
         if (this.pepeDeathFallStarted) {
             return;
         }
-
         this.pepeDeathFallStarted = true;
     }
 
@@ -267,16 +287,31 @@ class World {
             this.drawEndScreen();
             return;
         }
+        this.updateDeathFall();
+        this.clearCanvas();
+        this.drawBackground();
+        this.drawHud();
+        this.drawMovableObjects();
+        this.ctx.translate(-this.camera_x, 0);
+        this.requestNextFrame();
+    }
 
+    updateDeathFall() {
         if (this.pepeDeathFallStarted) {
             this.character.y += 12;
         }
+    }
 
+    clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 
+    drawBackground() {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectToMap(this.level.backgroundObjects);
+    }
 
+    drawHud() {
         this.ctx.translate(-this.camera_x, 0);
         this.addObjectToMap([this.startusBar]);
         this.addObjectToMap([this.statusbarCoin]);
@@ -285,7 +320,9 @@ class World {
             this.addObjectToMap([this.statusbarEndboss]);
         }
         this.ctx.translate(this.camera_x, 0);
+    }
 
+    drawMovableObjects() {
         this.addObjectToMap(this.level.clouds);
         this.addObjectToMap(this.level.coins);
         this.addObjectToMap(this.level.bottles);
@@ -293,10 +330,9 @@ class World {
         this.addObjectToMap(this.level.enemies);
         this.addObjectToMap(this.throwableObjects);
         this.addToMap(this.character);
+    }
 
-        this.ctx.translate(-this.camera_x, 0);
-
-        //draw wird immerwieder aufgerufen, damit die Bewegungen der Charaktere sichtbar werden
+    requestNextFrame() {
         let self = this;
         requestAnimationFrame(function () {
             self.draw();
@@ -305,7 +341,6 @@ class World {
 
     drawEndScreen() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
         if (this.endScreenImage && this.endScreenImage.complete) {
             this.ctx.drawImage(this.endScreenImage, 0, 0, this.canvas.width, this.canvas.height);
         }
@@ -318,14 +353,11 @@ class World {
     }
 
     addToMap(movableObject) {
-
         if (movableObject.othersDirection) {
             this.flipImage(movableObject);
         }
-
         movableObject.draw(this.ctx);
         movableObject.drawFrame(this.ctx);
-
         if (movableObject.othersDirection) {
             this.flipImageBack(movableObject);
         }
