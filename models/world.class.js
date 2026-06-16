@@ -4,6 +4,7 @@ class World {
     canvas;
     ctx;
     keyboard;
+    worldDraw;
     camera_x = 0;
     startusBar = new StatusBar();
     statusbarCoin = new StatusbarCoin();
@@ -11,6 +12,7 @@ class World {
     statusbarEndboss = new StatusbarEndboss();
     endbossWasSeen = false;
     gameEnded = false;
+    endScreenType = '';
     endScreenImage = new Image();
     pepeDeathFallStarted = false;
     throwableObjects = [];
@@ -18,15 +20,19 @@ class World {
     collectedCoins = 0;
     collectedBottles = 0;
     maxBottles = 0;
+    worldDraw = new WorldDraw(this);
 
     constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.worldDraw = new WorldDraw(this);
         this.gameOverImage = new Image();
         this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
         this.winningImage = new Image();
         this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
+        this.nextLevelImage = new Image();
+        this.nextLevelImage.src = 'assets/You won, you lost/next-level-screen.png';
         this.maxBottles = this.level.bottles.length;
         this.draw();
         this.setWorld();
@@ -36,12 +42,18 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        this.level.enemies.forEach((enemy) => {
+            if (enemy instanceof Endboss) {
+                enemy.world = this;
+            }
+        });
     }
 
     checkEndbossSeen() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && this.character.x > endboss.x - 700) {
+        if (endboss && !this.endbossWasSeen && this.character.x > endboss.x - 700) {
             this.endbossWasSeen = true;
+            playShowdownSound();
         }
     }
 
@@ -51,6 +63,7 @@ class World {
                 return;
             }
             this.checkEndbossSeen();
+            this.checkEndbossAttack();
             this.checkGameEnd();
             this.checkEnemyCollisions();
             this.checkCoinCollisions();
@@ -111,7 +124,7 @@ class World {
     }
 
     checkEndbossCollision(endboss) {
-        if (this.isCollidingWithOffset(this.character, endboss)) {
+        if (endboss.isAttacking && this.isCollidingWithOffset(this.character, endboss)) {
             this.character.hit();
             this.startusBar.setPercentage(this.character.energy);
         }
@@ -133,6 +146,7 @@ class World {
             return;
         }
         this.level.coins.splice(coinIndex, 1);
+        playCoinCollectSound();
         this.collectedCoins++;
         this.updateCoinStatusbar();
     }
@@ -178,7 +192,7 @@ class World {
     }
 
     hitEndboss(endboss) {
-        endboss.hit();
+        endboss.hitEndboss();
         this.statusbarEndboss.setPercentage(endboss.energy);
         if (endboss.isDead()) {
             this.removeDeadEndboss(endboss);
@@ -251,6 +265,13 @@ class World {
         this.updateBottleStatusbar();
     }
 
+    checkEndbossAttack() {
+        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss && this.character.x > endboss.x - 450) {
+            endboss.startAttack();
+        }
+    }
+
     checkGameEnd() {
         if (this.gameEnded) {
             return;
@@ -272,106 +293,31 @@ class World {
 
     showGameOverScreen() {
         this.gameEnded = true;
+        this.endScreenType = 'gameover';
         this.endScreenImage = this.gameOverImage;
-        this.drawEndScreen();
+        hideNextLevelButton();
+        playLostSound();
+        this.worldDraw.drawEndScreen();
     }
 
     showWinningScreen() {
         this.gameEnded = true;
+        this.endScreenType = 'winning';
         this.endScreenImage = this.winningImage;
-        this.drawEndScreen();
+        showNextLevelButton();
+        playWinningSound();
+        this.worldDraw.drawEndScreen();
+    }
+
+    showNextLevelScreen() {
+        this.endScreenType = 'nextlevel';
+        this.endScreenImage = this.nextLevelImage;
+        hideNextLevelButton();
+        playNextLevelSound();
+        this.worldDraw.drawEndScreen();
     }
 
     draw() {
-        if (this.gameEnded) {
-            this.drawEndScreen();
-            return;
-        }
-        this.updateDeathFall();
-        this.clearCanvas();
-        this.drawBackground();
-        this.drawHud();
-        this.drawMovableObjects();
-        this.ctx.translate(-this.camera_x, 0);
-        this.requestNextFrame();
-    }
-
-    updateDeathFall() {
-        if (this.pepeDeathFallStarted) {
-            this.character.y += 12;
-        }
-    }
-
-    clearCanvas() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
-    drawBackground() {
-        this.ctx.translate(this.camera_x, 0);
-        this.addObjectToMap(this.level.backgroundObjects);
-    }
-
-    drawHud() {
-        this.ctx.translate(-this.camera_x, 0);
-        this.addObjectToMap([this.startusBar]);
-        this.addObjectToMap([this.statusbarCoin]);
-        this.addObjectToMap([this.statusbarBottle]);
-        if (this.endbossWasSeen) {
-            this.addObjectToMap([this.statusbarEndboss]);
-        }
-        this.ctx.translate(this.camera_x, 0);
-    }
-
-    drawMovableObjects() {
-        this.addObjectToMap(this.level.clouds);
-        this.addObjectToMap(this.level.coins);
-        this.addObjectToMap(this.level.bottles);
-        this.addObjectToMap(this.level.bottleBoxes);
-        this.addObjectToMap(this.level.enemies);
-        this.addObjectToMap(this.throwableObjects);
-        this.addToMap(this.character);
-    }
-
-    requestNextFrame() {
-        let self = this;
-        requestAnimationFrame(function () {
-            self.draw();
-        });
-    }
-
-    drawEndScreen() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        if (this.endScreenImage && this.endScreenImage.complete) {
-            this.ctx.drawImage(this.endScreenImage, 0, 0, this.canvas.width, this.canvas.height);
-        }
-    }
-
-    addObjectToMap(object) {
-        object.forEach(o => {
-            this.addToMap(o);
-        });
-    }
-
-    addToMap(movableObject) {
-        if (movableObject.othersDirection) {
-            this.flipImage(movableObject);
-        }
-        movableObject.draw(this.ctx);
-        movableObject.drawFrame(this.ctx);
-        if (movableObject.othersDirection) {
-            this.flipImageBack(movableObject);
-        }
-    }
-
-    flipImage(movableObject) {
-        this.ctx.save();
-        this.ctx.translate(movableObject.width, 0);
-        this.ctx.scale(-1, 1);
-        movableObject.x = movableObject.x * -1;
-    }
-
-    flipImageBack(movableObject) {
-        movableObject.x = movableObject.x * -1;
-        this.ctx.restore();
+        this.worldDraw.draw();
     }
 }

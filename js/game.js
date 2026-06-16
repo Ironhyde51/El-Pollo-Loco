@@ -3,13 +3,73 @@ let ctx;
 let world;
 let keyboard = new Keyboard();
 let gameStarted = false;
+let introMusic = new Audio('audio/world_sounds/intro.mp3');
+let backgroundMusic = new Audio('audio/world_sounds/background.mp3');
+let lostSound = new Audio ('audio/world_sounds/lost.mp3')
+let winningSound = new Audio ('audio/world_sounds/winning.mp3');
+let nextLevelSound = new Audio ('audio/world_sounds/nuklea-level.mp3');
+let coinCollectSound = new Audio('audio/world_sounds/coin_collect.mp3');
+let showdownSound = new Audio('audio/world_sounds/showdown.mp3');
+introMusic.loop = true;
+backgroundMusic.loop = true;
+introMusic.volume = 0.4;
+backgroundMusic.volume = 0.4;
+lostSound.volume = 0.5;
+winningSound.volume = 0.5;
+nextLevelSound.volume = 0.5;
+coinCollectSound.volume = 0.5;
+showdownSound.volume = 0.6;
+
+function playIntroMusic() {
+    introMusic.play();
+}
+
+function playLostSound() {
+    backgroundMusic.pause();
+    lostSound.currentTime = 0;
+    lostSound.play();
+}
+
+function playWinningSound() {
+    backgroundMusic.pause();
+    winningSound.currentTime = 0;
+    winningSound.play();
+}
+
+function playNextLevelSound() {
+    winningSound.pause();
+    nextLevelSound.currentTime = 0;
+    nextLevelSound.play();
+}
+
+function playCoinCollectSound() {
+    coinCollectSound.currentTime = 0;
+    coinCollectSound.play();
+}
+
+function playShowdownSound() {
+    showdownSound.currentTime = 0;
+    showdownSound.play();
+}
+
+function restartBackgroundMusic() {
+    introMusic.pause();
+    lostSound.pause();
+    winningSound.pause();
+    nextLevelSound.pause();
+    introMusic.currentTime = 0;
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play();
+}
 
 function startGame() {
     if (gameStarted) {
         return;
     }
-
     gameStarted = true;
+    introMusic.pause();
+    introMusic.currentTime = 0;
+    backgroundMusic.play();
     document.getElementById("startScreen").classList.add("d-none");
     init();
 }
@@ -18,6 +78,8 @@ function restartGame() {
     if (world) {
         world.gameEnded = true;
     }
+    hideNextLevelButton();
+    restartBackgroundMusic();
     keyboard = new Keyboard();
     gameStarted = true;
     init();
@@ -33,6 +95,20 @@ function init() {
     };
     ctx = canvas.getContext("2d");
     world = new World(canvas, keyboard);
+}
+
+function showNextLevelButton() {
+    document.getElementById("nextLevelButton").classList.remove("d-none");
+}
+
+function hideNextLevelButton() {
+    document.getElementById("nextLevelButton").classList.add("d-none");
+}
+
+function openNextLevelScreen() {
+    if (world) {
+        world.showNextLevelScreen();
+    }
 }
 
 function toggleFullscreen() {

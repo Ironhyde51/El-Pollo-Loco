@@ -42,6 +42,28 @@ canvas {
     background: rgba(122, 27, 0, 0.9);
 }
 
+.next-level-button {
+    position: absolute;
+    left: 50%;
+    bottom: 48px;
+    transform: translateX(-50%);
+    z-index: 30;
+    width: 220px;
+    height: 50px;
+    border: 3px solid #ffd43b;
+    border-radius: 8px;
+    background: rgba(42, 11, 0, 0.88);
+    color: #ffd43b;
+    cursor: pointer;
+    font-family: 'Rye', serif;
+    font-size: 24px;
+    text-shadow: 1px 1px 0 #160600;
+}
+
+.next-level-button:hover {
+    background: rgba(122, 27, 0, 0.92);
+}
+
 .game-container:fullscreen {
     width: 100vw;
     height: 100vh;
@@ -62,6 +84,10 @@ canvas {
 .game-container:fullscreen .fullscreen-button {
     top: 20px;
     right: 20px;
+}
+
+.game-container:fullscreen .next-level-button {
+    bottom: calc((100vh - min(100vh, 66.67vw)) / 2 + 48px);
 }
 
 .start-screen {
