@@ -1,4 +1,4 @@
-body{
+body {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -39,6 +39,31 @@ canvas {
 }
 
 .fullscreen-button:hover {
+    background: rgba(122, 27, 0, 0.9);
+}
+
+.mute-button {
+    position: absolute;
+    top: 12px;
+    right: 64px;
+    z-index: 20;
+    width: 42px;
+    height: 42px;
+    border: 2px solid #ffd43b;
+    border-radius: 8px;
+    background: rgba(42, 11, 0, 0.78);
+    color: #ffd43b;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    text-shadow: 1px 1px 0 #160600;
+}
+
+.mute-button:hover {
     background: rgba(122, 27, 0, 0.9);
 }
 
@@ -84,6 +109,11 @@ canvas {
 .game-container:fullscreen .fullscreen-button {
     top: 20px;
     right: 20px;
+}
+
+.game-container:fullscreen .mute-button {
+    top: 20px;
+    right: 72px;
 }
 
 .game-container:fullscreen .next-level-button {

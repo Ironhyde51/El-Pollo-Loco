@@ -4,12 +4,20 @@ class Endboss extends MovableObject {
     height = 400;
     energy = 100;
     isAttacking = false;
+    isAlerting = false;
+    alertFinished = false;
     world;
     speed = 2;
 
 
-
     IMAGES_WALKING = [
+        'assets/4_enemie_boss_chicken/1_walk/G1.png',
+        'assets/4_enemie_boss_chicken/1_walk/G2.png',
+        'assets/4_enemie_boss_chicken/1_walk/G3.png',
+        'assets/4_enemie_boss_chicken/1_walk/G4.png'
+    ];
+
+    IMAGES_ALERT = [
         'assets/4_enemie_boss_chicken/2_alert/G5.png',
         'assets/4_enemie_boss_chicken/2_alert/G6.png',
         'assets/4_enemie_boss_chicken/2_alert/G7.png',
@@ -48,6 +56,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_ALERT);
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.x = 2500;
@@ -65,6 +74,8 @@ class Endboss extends MovableObject {
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.isAttacking) {
                 this.playAnimation(this.IMAGES_ATTACK);
+            } else if (this.isAlerting) {
+                this.playAnimation(this.IMAGES_ALERT);
             } else {
                 this.playAnimation(this.IMAGES_WALKING);
             }
@@ -81,6 +92,17 @@ class Endboss extends MovableObject {
         }, 1000);
     }
 
+    startAlert() {
+        if (this.isAlerting || this.alertFinished) {
+            return;
+        }
+        this.isAlerting = true;
+        setTimeout(() => {
+            this.isAlerting = false;
+            this.alertFinished = true;
+        }, 1600);
+    }
+
     hitEndboss() {
         this.energy -= 20;
         this.lastHit = new Date().getTime();
@@ -95,8 +117,7 @@ class Endboss extends MovableObject {
             if (!this.world || this.isDead()) {
                 return;
             }
-
-            if (this.world.endbossWasSeen && this.x > this.world.character.x + 120) {
+            if (this.world.endbossWasSeen && this.alertFinished && this.x > this.world.character.x + 120) {
                 this.x -= this.speed;
             }
         }, 1000 / 60);

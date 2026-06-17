@@ -53,6 +53,7 @@ class World {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
         if (endboss && !this.endbossWasSeen && this.character.x > endboss.x - 700) {
             this.endbossWasSeen = true;
+            endboss.startAlert();
             playShowdownSound();
         }
     }
@@ -267,7 +268,7 @@ class World {
 
     checkEndbossAttack() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && this.character.x > endboss.x - 450) {
+        if (endboss && endboss.alertFinished && this.character.x > endboss.x - 220) {
             endboss.startAttack();
         }
     }

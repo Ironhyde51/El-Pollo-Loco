@@ -5,9 +5,9 @@ let keyboard = new Keyboard();
 let gameStarted = false;
 let introMusic = new Audio('audio/world_sounds/intro.mp3');
 let backgroundMusic = new Audio('audio/world_sounds/background.mp3');
-let lostSound = new Audio ('audio/world_sounds/lost.mp3')
-let winningSound = new Audio ('audio/world_sounds/winning.mp3');
-let nextLevelSound = new Audio ('audio/world_sounds/nuklea-level.mp3');
+let lostSound = new Audio('audio/world_sounds/lost.mp3');
+let winningSound = new Audio('audio/world_sounds/winning.mp3');
+let nextLevelSound = new Audio('audio/world_sounds/nuklea-level.mp3');
 let coinCollectSound = new Audio('audio/world_sounds/coin_collect.mp3');
 let showdownSound = new Audio('audio/world_sounds/showdown.mp3');
 introMusic.loop = true;
@@ -19,6 +19,41 @@ winningSound.volume = 0.5;
 nextLevelSound.volume = 0.5;
 coinCollectSound.volume = 0.5;
 showdownSound.volume = 0.6;
+
+let allSounds = [
+    introMusic,
+    backgroundMusic,
+    lostSound,
+    winningSound,
+    nextLevelSound,
+    coinCollectSound,
+    showdownSound
+];
+
+let isMuted = localStorage.getItem('isMuted') === 'true';
+
+function applyMuteState() {
+    allSounds.forEach((sound) => {
+        sound.muted = isMuted;
+    });
+    updateMuteButton();
+}
+
+function updateMuteButton() {
+    let muteButton = document.getElementById("muteButton");
+    if (!muteButton) {
+        return;
+    }
+    muteButton.innerHTML = isMuted ? "&#128263;" : "&#128266;";
+    muteButton.title = isMuted ? "Sound einschalten" : "Sound stummschalten";
+    muteButton.setAttribute("aria-label", muteButton.title);
+}
+
+function toggleMute() {
+    isMuted = !isMuted;
+    localStorage.setItem('isMuted', isMuted);
+    applyMuteState();
+}
 
 function playIntroMusic() {
     introMusic.play();
@@ -183,3 +218,4 @@ document.addEventListener("keyup", (event) => {
         keyboard.D = false;
     }
 });
+applyMuteState();
