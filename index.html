@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
 
@@ -31,6 +32,29 @@
         <button id="nextLevelButton" class="next-level-button d-none" type="button" onclick="openNextLevelScreen()">
             Next Level
         </button>
+
+        <div class="touch-controls">
+            <div class="touch-controls-left">
+                <button id="touchLeft" class="touch-button" type="button">
+                    <img src="assets/game_touch_buttons/btn_left.png" alt="Links">
+                </button>
+
+                <button id="touchRight" class="touch-button" type="button">
+                    <img src="assets/game_touch_buttons/btn_right.png" alt="Rechts">
+                </button>
+            </div>
+
+            <div class="touch-controls-right">
+                <button id="touchJump" class="touch-button" type="button">
+                    <img src="assets/game_touch_buttons/btn_jump.png" alt="Springen">
+                </button>
+
+                <button id="touchThrow" class="touch-button" type="button">
+                    <img src="assets/game_touch_buttons/btn_throw.png" alt="Werfen">
+                </button>
+            </div>
+        </div>
+
         <div id="startScreen" class="start-screen" onclick="startGame()" onmouseenter="playIntroMusic()">
             <img src="assets/9_intro_outro_screens/start/startscreen_1.png" alt="Start El Pollo Loco">
 
@@ -74,6 +98,7 @@
     <script src="models/coin.class.js"></script>
     <script src="level/level1.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/touch-controls.js"></script>
     <script src="script.js"></script>
 
 </body>

@@ -55,46 +55,77 @@ function toggleMute() {
     applyMuteState();
 }
 
+function playSound(sound, restart = true) {
+    if (isMuted) {
+        return;
+    }
+    sound.muted = false;
+    if (restart) {
+        sound.currentTime = 0;
+    }
+    sound.play().catch(() => {
+        setTimeout(() => {
+            if (!isMuted) {
+                sound.play().catch(() => { });
+            }
+        }, 100);
+    });
+}
+
+function stopSound(sound) {
+    sound.pause();
+    sound.currentTime = 0;
+}
+
+function playBackgroundMusic() {
+    if (isMuted) {
+        return;
+    }
+    backgroundMusic.muted = false;
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play().catch(() => {
+        setTimeout(() => {
+            if (!isMuted) {
+                backgroundMusic.play().catch(() => { });
+            }
+        }, 100);
+    });
+}
+
 function playIntroMusic() {
-    introMusic.play();
+    playSound(introMusic, false);
 }
 
 function playLostSound() {
-    backgroundMusic.pause();
-    lostSound.currentTime = 0;
-    lostSound.play();
+    stopSound(backgroundMusic);
+    playSound(lostSound);
 }
 
 function playWinningSound() {
-    backgroundMusic.pause();
-    winningSound.currentTime = 0;
-    winningSound.play();
+    stopSound(backgroundMusic);
+    playSound(winningSound);
 }
 
 function playNextLevelSound() {
-    winningSound.pause();
-    nextLevelSound.currentTime = 0;
-    nextLevelSound.play();
+    stopSound(winningSound);
+    playSound(nextLevelSound);
 }
 
 function playCoinCollectSound() {
-    coinCollectSound.currentTime = 0;
-    coinCollectSound.play();
+    playSound(coinCollectSound);
 }
 
 function playShowdownSound() {
-    showdownSound.currentTime = 0;
-    showdownSound.play();
+    playSound(showdownSound);
 }
 
 function restartBackgroundMusic() {
-    introMusic.pause();
-    lostSound.pause();
-    winningSound.pause();
-    nextLevelSound.pause();
-    introMusic.currentTime = 0;
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play();
+    stopSound(introMusic);
+    stopSound(lostSound);
+    stopSound(winningSound);
+    stopSound(nextLevelSound);
+    stopSound(backgroundMusic);
+    playBackgroundMusic();
 }
 
 function startGame() {
@@ -102,10 +133,11 @@ function startGame() {
         return;
     }
     gameStarted = true;
-    introMusic.pause();
-    introMusic.currentTime = 0;
-    backgroundMusic.play();
+    stopSound(introMusic);
+    applyMuteState();
+    playBackgroundMusic();
     document.getElementById("startScreen").classList.add("d-none");
+    showTouchControls();
     init();
 }
 
@@ -114,6 +146,7 @@ function restartGame() {
         world.gameEnded = true;
     }
     hideNextLevelButton();
+    showTouchControls();
     restartBackgroundMusic();
     keyboard = new Keyboard();
     gameStarted = true;
@@ -138,6 +171,14 @@ function showNextLevelButton() {
 
 function hideNextLevelButton() {
     document.getElementById("nextLevelButton").classList.add("d-none");
+}
+
+function showTouchControls() {
+    document.querySelector(".touch-controls").classList.add("touch-controls-visible");
+}
+
+function hideTouchControls() {
+    document.querySelector(".touch-controls").classList.remove("touch-controls-visible");
 }
 
 function openNextLevelScreen() {
