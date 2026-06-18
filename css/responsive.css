@@ -3,3 +3,13 @@
         display: flex;
     }
 }
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+    .rotate-device-message {
+        display: block;
+    }
+
+    .game-container {
+        display: none;
+    }
+}

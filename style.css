@@ -1,4 +1,6 @@
 body {
+    min-height: 100vh;
+    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -131,6 +133,16 @@ canvas {
     background: rgba(122, 27, 0, 0.92);
 }
 
+.rotate-device-message {
+    display: none;
+    color: #ffd43b;
+    font-family: 'Rye', serif;
+    font-size: 28px;
+    text-align: center;
+    padding: 24px;
+    text-shadow: 2px 2px 0 #160600;
+}
+
 .game-container:fullscreen {
     width: 100vw;
     height: 100vh;
@@ -249,6 +261,10 @@ h1 {
 }
 
 html {
+    min-height: 100%;
     background-image: url('./assets/5_background/screen_bg.png');
+    background-repeat: no-repeat;
+    background-position: center center;
     background-size: cover;
+    background-attachment: fixed;
 }
