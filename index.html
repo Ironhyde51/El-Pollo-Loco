@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/info-modal.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
@@ -31,6 +32,11 @@
         <button id="muteButton" class="mute-button" type="button" onclick="toggleMute()"
             aria-label="Sound stummschalten" title="Sound stummschalten">
             &#128266;
+        </button>
+
+        <button id="infoButton" class="info-button" type="button" onclick="openInfoModal()"
+            aria-label="Spielinfo öffnen" title="Spielinfo öffnen">
+            ?
         </button>
 
         <button id="nextLevelButton" class="next-level-button d-none" type="button" onclick="openNextLevelScreen()">
@@ -79,6 +85,35 @@
             <img src="assets/You won, you lost/winning-screen.png" alt="You Won">
         </div>
 
+    </div>
+
+    <div id="infoModal" class="info-modal d-none" onclick="closeInfoModal()">
+        <div class="info-paper" onclick="event.stopPropagation()">
+            <button class="info-close-button" type="button" onclick="closeInfoModal()" aria-label="Spielinfo schließen"
+                title="Spielinfo schließen">
+                &times;
+            </button>
+
+            <h2>Spielinfo</h2>
+            <p>
+                Sammle Münzen und Flaschen, weiche Gegnern aus und besiege den Endboss mit geworfenen Salsa-Flaschen.
+            </p>
+
+            <ul>
+                <li>Pfeiltasten: laufen</li>
+                <li>Leertaste: springen</li>
+                <li>D: Flasche werfen</li>
+                <li>Coins und Flaschen füllen deine Statusbars</li>
+                <li>Springe auf normale Gegner, um sie zu besiegen</li>
+                <li>Besiege den Endboss mit Salsa-Flaschen</li>
+                <li>Auf Handy und Tablet nutzt du die Touch-Buttons</li>
+            </ul>
+            
+            <p class="info-disclaimer">
+                Dieses Spiel wurde ausschließlich für Lernzwecke programmiert und es werden keinerlei Einnahmen damit
+                erzielt.
+            </p>
+        </div>
     </div>
     <script src="models/drawable-object.class.js"></script>
     <script src="models/movable-object.class.js"></script>

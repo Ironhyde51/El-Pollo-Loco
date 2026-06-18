@@ -181,6 +181,14 @@ function hideTouchControls() {
     document.querySelector(".touch-controls").classList.remove("touch-controls-visible");
 }
 
+function openInfoModal() {
+    document.getElementById("infoModal").classList.remove("d-none");
+}
+
+function closeInfoModal() {
+    document.getElementById("infoModal").classList.add("d-none");
+}
+
 function openNextLevelScreen() {
     if (world) {
         world.showNextLevelScreen();
