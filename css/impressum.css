@@ -1,0 +1,50 @@
+.impressum-page {
+    justify-content: center;
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+.impressum-content {
+    width: min(90vw, 720px);
+    padding: 32px;
+    border: 3px solid #ffd43b;
+    border-radius: 8px;
+    background: rgba(42, 11, 0, 0.84);
+    color: #fff4b8;
+    font-family: Arial, sans-serif;
+    text-shadow: 1px 1px 0 #160600;
+}
+
+.impressum-content h1 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.impressum-content h2 {
+    margin: 24px 0 8px;
+    color: #ffd43b;
+    font-family: 'Rye', serif;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.impressum-content p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.back-home-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+    border: 2px solid #ffd43b;
+    border-radius: 8px;
+    background: rgba(122, 27, 0, 0.9);
+    color: #ffd43b;
+    font-family: 'Rye', serif;
+    text-decoration: none;
+}
+
+.back-home-link:hover {
+    background: rgba(42, 11, 0, 0.9);
+}

@@ -43,6 +43,11 @@
             Next Level
         </button>
 
+        <button id="homeButton" class="home-button d-none" type="button" onclick="goHome()"
+            aria-label="Zurück zum Startbildschirm" title="Zurück zum Startbildschirm">
+            <img src="assets/home.png" alt="Home">
+        </button>
+
         <div class="touch-controls">
             <div class="touch-controls-left">
                 <button id="touchLeft" class="touch-button" type="button">
@@ -84,8 +89,9 @@
         <div id="winningScreen" class="end-screen d-none">
             <img src="assets/You won, you lost/winning-screen.png" alt="You Won">
         </div>
-
     </div>
+
+    <a class="legal-link" href="impressum.html">Impressum / Info</a>
 
     <div id="infoModal" class="info-modal d-none" onclick="closeInfoModal()">
         <div class="info-paper" onclick="event.stopPropagation()">
@@ -106,9 +112,10 @@
                 <li>Coins und Flaschen füllen deine Statusbars</li>
                 <li>Springe auf normale Gegner, um sie zu besiegen</li>
                 <li>Besiege den Endboss mit Salsa-Flaschen</li>
+                <li>Retrey mit klick auf Winnig/Lose Screen </li>
                 <li>Auf Handy und Tablet nutzt du die Touch-Buttons</li>
             </ul>
-            
+
             <p class="info-disclaimer">
                 Dieses Spiel wurde ausschließlich für Lernzwecke programmiert und es werden keinerlei Einnahmen damit
                 erzielt.

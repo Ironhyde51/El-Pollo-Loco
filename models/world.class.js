@@ -298,6 +298,7 @@ class World {
         this.endScreenImage = this.gameOverImage;
         hideNextLevelButton();
         hideTouchControls();
+        showHomeButton();
         playLostSound();
         this.worldDraw.drawEndScreen();
     }
@@ -308,6 +309,7 @@ class World {
         this.endScreenImage = this.winningImage;
         showNextLevelButton();
         hideTouchControls();
+        showHomeButton();
         playWinningSound();
         this.worldDraw.drawEndScreen();
     }
@@ -317,6 +319,7 @@ class World {
         this.endScreenImage = this.nextLevelImage;
         hideNextLevelButton();
         hideTouchControls();
+        showHomeButton();
         playNextLevelSound();
         this.worldDraw.drawEndScreen();
     }

@@ -133,6 +133,7 @@ function startGame() {
         return;
     }
     gameStarted = true;
+    hideHomeButton();
     stopSound(introMusic);
     applyMuteState();
     playBackgroundMusic();
@@ -146,6 +147,7 @@ function restartGame() {
         world.gameEnded = true;
     }
     hideNextLevelButton();
+    hideHomeButton();
     showTouchControls();
     restartBackgroundMusic();
     keyboard = new Keyboard();
@@ -173,6 +175,14 @@ function hideNextLevelButton() {
     document.getElementById("nextLevelButton").classList.add("d-none");
 }
 
+function showHomeButton() {
+    document.getElementById("homeButton").classList.remove("d-none");
+}
+
+function hideHomeButton() {
+    document.getElementById("homeButton").classList.add("d-none");
+}
+
 function showTouchControls() {
     document.querySelector(".touch-controls").classList.add("touch-controls-visible");
 }
@@ -193,6 +203,22 @@ function openNextLevelScreen() {
     if (world) {
         world.showNextLevelScreen();
     }
+}
+
+function goHome() {
+    if (world) {
+        world.gameEnded = true;
+    }
+    hideHomeButton();
+    hideNextLevelButton();
+    hideTouchControls();
+    stopSound(backgroundMusic);
+    stopSound(lostSound);
+    stopSound(winningSound);
+    stopSound(nextLevelSound);
+    gameStarted = false;
+    keyboard = new Keyboard();
+    document.getElementById("startScreen").classList.remove("d-none");
 }
 
 function toggleFullscreen() {
