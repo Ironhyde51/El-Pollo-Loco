@@ -90,7 +90,7 @@ Mein Fokus in diesem Projekt lag auf dem Verständnis von objektorientierter Pro
 ## 🚀 Erste Schritte
 
 ```bash
-git clone DEIN-GITHUB-LINK
+git clone https://github.com/Ironhyde51/El-Pollo-Loco.git
 cd EL_POLLO_LOCO
 ```
 
