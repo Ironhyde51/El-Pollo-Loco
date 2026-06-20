@@ -95,8 +95,19 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
         this.walking_sound.loop = true;
+        this.registerCharacterSounds();
         this.applyGravity();
         this.animate();
+    }
+
+    /**
+     * Registers Pepe's sounds so they follow the global mute button.
+     */
+    registerCharacterSounds() {
+        if (typeof registerSound === 'function') {
+            registerSound(this.walking_sound);
+            registerSound(this.landing_sound);
+        }
     }
 
     /**
@@ -175,14 +186,13 @@ class Character extends MovableObject {
         let isAboveGround = this.isAboveGround();
 
         if (isMoving && !isAboveGround) {
-            this.walking_sound.play().catch(() => { });
+            playSound(this.walking_sound, false);
         } else {
             this.walking_sound.pause();
         }
 
         if (this.wasAboveGround && !isAboveGround) {
-            this.landing_sound.currentTime = 0;
-            this.landing_sound.play().catch(() => { });
+            playSound(this.landing_sound);
         }
 
         this.wasAboveGround = isAboveGround;

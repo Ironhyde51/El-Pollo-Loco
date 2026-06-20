@@ -47,7 +47,15 @@ class ThrowableObject extends MovableObject {
     this.x = x;
     this.y = y;
     this.direction = direction;
+    this.registerBreakSound();
     this.throw();
+  }
+
+  /** Registers the bottle break sound so it follows the global mute button. */
+  registerBreakSound() {
+    if (typeof registerSound === 'function') {
+      registerSound(this.breakSound);
+    }
   }
 
   /** Initialises throw physics and starts both the physics and animation loops. */
@@ -77,8 +85,7 @@ class ThrowableObject extends MovableObject {
     this.x += this.speedX * this.direction;
     if (this.y >= this.groundY - 30 && !this.soundTriggered) {
       this.soundTriggered = true;
-      this.breakSound.currentTime = 0;
-      this.breakSound.play().catch(() => {});
+      playSound(this.breakSound);
     }
   }
 
@@ -101,8 +108,7 @@ class ThrowableObject extends MovableObject {
     clearInterval(this.physicsInterval);
     if (!this.soundTriggered) {
       this.soundTriggered = true;
-      this.breakSound.currentTime = 0;
-      this.breakSound.play().catch(() => {});
+      playSound(this.breakSound);
     }
     setTimeout(() => {
       clearInterval(this.animationInterval);

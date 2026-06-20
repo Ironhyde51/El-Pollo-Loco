@@ -33,6 +33,17 @@ let allSounds = [
 let isMuted = localStorage.getItem('isMuted') === 'true';
 
 /**
+ * Adds a sound to the global mute handling.
+ * @param {HTMLAudioElement} sound - Audio object that should follow the mute state.
+ */
+function registerSound(sound) {
+    if (!allSounds.includes(sound)) {
+        allSounds.push(sound);
+    }
+    sound.muted = isMuted;
+}
+
+/**
  * Applies the current mute state to all globally managed game sounds and updates the mute button.
  */
 function applyMuteState() {
@@ -71,8 +82,10 @@ function toggleMute() {
  */
 function playSound(sound, restart = true) {
     if (isMuted) {
+        sound.pause();
         return;
     }
+    registerSound(sound);
     sound.muted = false;
     if (restart) {
         sound.currentTime = 0;
