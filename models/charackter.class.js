@@ -8,7 +8,11 @@ class Character extends MovableObject {
     height = 300;
     speed = 5;
     energy = 100;
-
+    offsetTop = 80;
+    offsetBottom = 5;
+    offsetLeft = 45;
+    offsetRight = 50;
+    
     IMAGES_IDLE = [
         'assets/2_character_pepe/1_idle/idle/I-1.png',
         'assets/2_character_pepe/1_idle/idle/I-2.png',
