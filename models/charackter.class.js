@@ -1,3 +1,7 @@
+/**
+ * Player character Pepe with movement, jump, idle, hurt and death animations.
+ * @extends MovableObject
+ */
 class Character extends MovableObject {
 
     y = 10;
@@ -78,6 +82,9 @@ class Character extends MovableObject {
     lastActionTime = new Date().getTime();
 
 
+    /**
+     * Creates Pepe, loads his animation images and starts gravity and animation.
+     */
     constructor() {
         super();
         this.loadImage('assets/2_character_pepe/2_walk/W-21.png');
@@ -92,16 +99,26 @@ class Character extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Saves the time of the latest movement or jump input.
+     */
     updateLastActionTime() {
         this.lastActionTime = new Date().getTime();
     }
 
+    /**
+     * Checks whether Pepe has been inactive long enough for long idle animation.
+     * @returns {boolean} True when Pepe has been idle for more than five seconds.
+     */
     isLongIdle() {
         let timePassed = new Date().getTime() - this.lastActionTime;
         timePassed = timePassed / 1000;
         return timePassed > 5;
     }
 
+    /**
+     * Starts the input movement loop and the character animation loop.
+     */
     animate() {
         setInterval(() => {
             let isMoving = false;
@@ -143,10 +160,17 @@ class Character extends MovableObject {
         }, 100);
     }
 
+    /**
+     * Gives Pepe upward speed for a jump.
+     */
     jump() {
         this.speedY = 25;
     }
 
+    /**
+     * Plays walking and landing sounds depending on Pepe's movement state.
+     * @param {boolean} isMoving - True when Pepe is walking left or right.
+     */
     playMovementSounds(isMoving) {
         let isAboveGround = this.isAboveGround();
 

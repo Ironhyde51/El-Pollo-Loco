@@ -1,3 +1,7 @@
+/**
+ * Displays the collected bottle progress as an image-based status bar.
+ * @extends DrawableObject
+ */
 class StatusbarBottle extends DrawableObject {
 
   IMAGES = [
@@ -11,7 +15,9 @@ class StatusbarBottle extends DrawableObject {
 
   percentage = 0;
 
-  /** Initialises the bottle status bar at 0 % and positions it on the HUD. */
+  /**
+   * Initialises the bottle status bar at 0 % and positions it on the HUD.
+   */
   constructor() {
     super();
     this.loadImages(this.IMAGES);
@@ -41,9 +47,9 @@ class StatusbarBottle extends DrawableObject {
   }
 
   /**
-   * Maps a percentage value to the corresponding image-array index (0–5).
+   * Maps a percentage value to the corresponding image-array index from 0 to 5.
    * @param {number} percentage - Value between 0 and 100.
-   * @returns {number}
+   * @returns {number} Index of the bottle status bar image.
    */
   resolveImageIndex(percentage) {
     if (percentage >= 100) return 5;

@@ -1,8 +1,18 @@
+/**
+ * Handles all canvas drawing steps for the current world.
+ */
 class WorldDraw {
+    
+    /**
+     * @param {World} world - Game world that provides objects, canvas and camera.
+     */
     constructor(world) {
         this.world = world;
     }
 
+    /**
+     * Draws one frame and schedules the next one.
+     */
     draw() {
         let world = this.world;
         if (world.gameEnded) {
@@ -18,6 +28,9 @@ class WorldDraw {
         this.requestNextFrame();
     }
 
+    /**
+     * Moves Pepe downward after the death fall starts.
+     */
     updateDeathFall() {
         let world = this.world;
         if (world.pepeDeathFallStarted) {
@@ -25,11 +38,17 @@ class WorldDraw {
         }
     }
 
+    /**
+     * Clears the full canvas before a new frame is drawn.
+     */
     clearCanvas() {
         let world = this.world;
         world.ctx.clearRect(0, 0, world.canvas.width, world.canvas.height);
     }
 
+    /**
+     * Requests the next animation frame for the draw loop.
+     */
     requestNextFrame() {
         let self = this;
         requestAnimationFrame(function () {
@@ -37,6 +56,9 @@ class WorldDraw {
         });
     }
 
+    /**
+     * Draws the current end screen image when the game has ended.
+     */
     drawEndScreen() {
         let world = this.world;
         world.ctx.clearRect(0, 0, world.canvas.width, world.canvas.height);
@@ -45,12 +67,18 @@ class WorldDraw {
         }
     }
 
+    /**
+     * Draws all background layers with camera translation.
+     */
     drawBackground() {
         let world = this.world;
         world.ctx.translate(world.camera_x, 0);
         this.addObjectToMap(world.level.backgroundObjects);
     }
 
+    /**
+     * Draws fixed HUD elements like health, coins, bottles and boss health.
+     */
     drawHud() {
         let world = this.world;
         world.ctx.translate(-world.camera_x, 0);
@@ -63,6 +91,9 @@ class WorldDraw {
         world.ctx.translate(world.camera_x, 0);
     }
 
+    /**
+     * Draws all world objects that move together with the camera.
+     */
     drawMovableObjects() {
         let world = this.world;
         this.addObjectToMap(world.level.clouds);
@@ -74,12 +105,20 @@ class WorldDraw {
         this.addToMap(world.character);
     }
 
-    addObjectToMap(object) {
-        object.forEach(o => {
+    /**
+     * Adds every object of an array to the canvas.
+     * @param {DrawableObject[]} objects - Objects that should be drawn.
+     */
+    addObjectToMap(objects) {
+        objects.forEach(o => {
             this.addToMap(o);
         });
     }
 
+    /**
+     * Draws one object and flips it when it faces the other direction.
+     * @param {DrawableObject} movableObject - Object that should be drawn.
+     */
     addToMap(movableObject) {
         let world = this.world;
         if (movableObject.othersDirection) {
@@ -91,6 +130,10 @@ class WorldDraw {
         }
     }
 
+    /**
+     * Mirrors the canvas before drawing an object that faces left.
+     * @param {DrawableObject} movableObject - Object that should be flipped.
+     */
     flipImage(movableObject) {
         let world = this.world;
         world.ctx.save();
@@ -99,6 +142,10 @@ class WorldDraw {
         movableObject.x = movableObject.x * -1;
     }
 
+    /**
+     * Restores object position and canvas state after drawing a flipped object.
+     * @param {DrawableObject} movableObject - Object that was flipped.
+     */
     flipImageBack(movableObject) {
         let world = this.world;
         movableObject.x = movableObject.x * -1;

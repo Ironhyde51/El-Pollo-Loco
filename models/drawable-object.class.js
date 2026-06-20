@@ -20,9 +20,9 @@ class DrawableObject {
     }
 
     /**
-    * Draws the current image on the canvas when it is fully loaded.
-    * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
-    */
+     * Draws the current image on the canvas when it is fully loaded.
+     * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
+     */
     draw(ctx) {
         if (!this.img || !this.img.complete || this.img.naturalWidth === 0) {
             return;
@@ -43,9 +43,9 @@ class DrawableObject {
     }
 
     /**
-    * Draws a debug frame around selected objects when called.
-    * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
-    */
+     * Draws a debug frame around selected objects when called.
+     * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
+     */
     drawFrame(ctx) {
         if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
             ctx.beginPath();

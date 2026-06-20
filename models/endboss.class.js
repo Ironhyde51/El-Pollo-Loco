@@ -1,3 +1,7 @@
+/**
+ * Final boss enemy with alert, walk, attack, hurt and death animations.
+ * @extends MovableObject
+ */
 class Endboss extends MovableObject {
 
     width = 250;
@@ -51,6 +55,9 @@ class Endboss extends MovableObject {
         'assets/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
+    /**
+     * Creates the endboss, loads all animation images and starts its behavior.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES_ATTACK);
@@ -66,6 +73,9 @@ class Endboss extends MovableObject {
 
     }
 
+    /**
+     * Chooses and plays the correct animation depending on the boss state.
+     */
     animate() {
         setInterval(() => {
             if (this.isDead()) {
@@ -82,6 +92,9 @@ class Endboss extends MovableObject {
         }, 200);
     }
 
+    /**
+     * Starts a short attack animation if the boss is alive and not attacking.
+     */
     startAttack() {
         if (this.isDead() || this.isAttacking) {
             return;
@@ -92,6 +105,9 @@ class Endboss extends MovableObject {
         }, 1000);
     }
 
+    /**
+     * Plays the alert animation once before the boss begins walking.
+     */
     startAlert() {
         if (this.isAlerting || this.alertFinished) {
             return;
@@ -103,6 +119,9 @@ class Endboss extends MovableObject {
         }, 1600);
     }
 
+    /**
+     * Reduces the boss health and stores the hit time for the hurt animation.
+     */
     hitEndboss() {
         this.energy -= 20;
         this.lastHit = new Date().getTime();
@@ -112,6 +131,9 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Moves the boss toward Pepe after the alert animation has finished.
+     */
     moveTowardsCharacter() {
         setInterval(() => {
             if (!this.world || this.isDead()) {

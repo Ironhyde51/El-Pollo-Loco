@@ -1,3 +1,7 @@
+/**
+ * Small chicken enemy with faster movement and a smaller hitbox.
+ * @extends MovableObject
+ */
 class SmallChicken extends MovableObject {
     y = 390;
     height = 40;
@@ -10,6 +14,9 @@ class SmallChicken extends MovableObject {
         'assets/3_enemies_chicken/chicken_small/1_walk/3_w.png'
     ];
 
+    /**
+     * Creates a small chicken at a random level position and starts its animation.
+     */
     constructor() {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
@@ -19,6 +26,9 @@ class SmallChicken extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Starts the movement loop and walking animation loop.
+     */
     animate() {
         setInterval(() => {
             this.moveLeft();
