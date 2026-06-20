@@ -1,13 +1,18 @@
+/**
+ * Stores the current keyboard input state for movement, jumping and throwing.
+ */
 class Keyboard {
-    
-LEFT = false;
-RIGHT = false;
-SPACE = false;
-UP = false;
-DOWN = false;
-D = false;
 
+    LEFT = false;
+    RIGHT = false;
+    SPACE = false;
+    UP = false;
+    DOWN = false;
+    D = false;
 
+    /**
+     * Initializes all keyboard inputs as not pressed.
+     */
     constructor() {
         this.Left = false;
         this.Right = false;

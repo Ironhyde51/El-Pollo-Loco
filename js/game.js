@@ -32,6 +32,9 @@ let allSounds = [
 
 let isMuted = localStorage.getItem('isMuted') === 'true';
 
+/**
+ * Applies the current mute state to all globally managed game sounds and updates the mute button.
+ */
 function applyMuteState() {
     allSounds.forEach((sound) => {
         sound.muted = isMuted;
@@ -39,6 +42,9 @@ function applyMuteState() {
     updateMuteButton();
 }
 
+/**
+ * Updates the mute button icon, title and aria-label based on the current mute state.
+ */
 function updateMuteButton() {
     let muteButton = document.getElementById("muteButton");
     if (!muteButton) {
@@ -49,12 +55,20 @@ function updateMuteButton() {
     muteButton.setAttribute("aria-label", muteButton.title);
 }
 
+/**
+ * Toggles all globally managed game sounds and stores the setting in localStorage.
+ */
 function toggleMute() {
     isMuted = !isMuted;
     localStorage.setItem('isMuted', isMuted);
     applyMuteState();
 }
 
+/**
+ * Plays an audio object while respecting the global mute state.
+ * @param {HTMLAudioElement} sound - Audio object that should be played.
+ * @param {boolean} [restart=true] - Whether the sound should restart from the beginning.
+ */
 function playSound(sound, restart = true) {
     if (isMuted) {
         return;
@@ -72,11 +86,18 @@ function playSound(sound, restart = true) {
     });
 }
 
+/**
+ * Stops an audio object and resets it to the beginning.
+ * @param {HTMLAudioElement} sound - Audio object that should be stopped.
+ */
 function stopSound(sound) {
     sound.pause();
     sound.currentTime = 0;
 }
 
+/**
+ * Starts the looping background music while respecting the global mute state.
+ */
 function playBackgroundMusic() {
     if (isMuted) {
         return;
@@ -119,6 +140,9 @@ function playShowdownSound() {
     playSound(showdownSound);
 }
 
+/**
+ * Stops all endscreen music and restarts the regular gameplay background music.
+ */
 function restartBackgroundMusic() {
     stopSound(introMusic);
     stopSound(lostSound);
@@ -128,6 +152,9 @@ function restartBackgroundMusic() {
     playBackgroundMusic();
 }
 
+/**
+ * Starts the game from the start screen and initializes the first level.
+ */
 function startGame() {
     if (gameStarted) {
         return;
@@ -142,6 +169,9 @@ function startGame() {
     init();
 }
 
+/**
+ * Restarts the current level after an endscreen without reloading the page.
+ */
 function restartGame() {
     if (world) {
         world.gameEnded = true;
@@ -167,44 +197,74 @@ function init() {
     world = new World(canvas, keyboard);
 }
 
+/**
+ * Shows the next-level button on winning-related screens.
+ */
 function showNextLevelButton() {
     document.getElementById("nextLevelButton").classList.remove("d-none");
 }
 
+/**
+ * Hides the next-level button.
+ */
 function hideNextLevelButton() {
     document.getElementById("nextLevelButton").classList.add("d-none");
 }
 
+/**
+ * Shows the home button on end screens.
+ */
 function showHomeButton() {
     document.getElementById("homeButton").classList.remove("d-none");
 }
 
+/**
+ * Hides the home button.
+ */
 function hideHomeButton() {
     document.getElementById("homeButton").classList.add("d-none");
 }
 
+/**
+ * Shows mobile touch controls during gameplay.
+ */
 function showTouchControls() {
     document.querySelector(".touch-controls").classList.add("touch-controls-visible");
 }
 
+/**
+ * Hides mobile touch controls outside gameplay.
+ */
 function hideTouchControls() {
     document.querySelector(".touch-controls").classList.remove("touch-controls-visible");
 }
 
+/**
+ * Opens the game information modal.
+ */
 function openInfoModal() {
     document.getElementById("infoModal").classList.remove("d-none");
 }
 
+/**
+ * Closes the game information modal.
+ */
 function closeInfoModal() {
     document.getElementById("infoModal").classList.add("d-none");
 }
 
+/**
+ * Shows the next-level screen after the winning screen.
+ */
 function openNextLevelScreen() {
     if (world) {
         world.showNextLevelScreen();
     }
 }
 
+/**
+ * Returns from an endscreen to the start screen and resets UI controls.
+ */
 function goHome() {
     if (world) {
         world.gameEnded = true;

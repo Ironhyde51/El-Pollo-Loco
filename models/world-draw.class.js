@@ -86,7 +86,6 @@ class WorldDraw {
             this.flipImage(movableObject);
         }
         movableObject.draw(world.ctx);
-        movableObject.drawFrame(world.ctx);
         if (movableObject.othersDirection) {
             this.flipImageBack(movableObject);
         }

@@ -40,6 +40,9 @@ class World {
         this.checkThrowObjects();
     }
 
+    /**
+     * Passes the current world instance to objects that need access to global game state.
+     */
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => {
@@ -49,6 +52,9 @@ class World {
         });
     }
 
+    /**
+     * Detects the first time the character gets close to the endboss and starts the showdown.
+     */
     checkEndbossSeen() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
         if (endboss && !this.endbossWasSeen && this.character.x > endboss.x - 700) {
@@ -58,6 +64,9 @@ class World {
         }
     }
 
+    /**
+     * Starts the interval that checks all gameplay collisions and game-end conditions.
+     */
     checkCollisions() {
         setInterval(() => {
             if (this.gameEnded) {
@@ -141,6 +150,10 @@ class World {
         }
     }
 
+    /**
+     * Removes a collected coin from the level and updates the coin status bar.
+     * @param {Coin} coin - Coin that collided with the character.
+     */
     collectCoin(coin) {
         let coinIndex = this.level.coins.indexOf(coin);
         if (coinIndex === -1) {
@@ -152,12 +165,21 @@ class World {
         this.updateCoinStatusbar();
     }
 
+    /**
+     * Calculates and applies the current coin collection percentage.
+     */
     updateCoinStatusbar() {
         let totalCoins = this.collectedCoins + this.level.coins.length;
         let percentage = totalCoins === 0 ? 0 : (this.collectedCoins / totalCoins) * 100;
         this.statusbarCoin.setPercentage(percentage);
     }
 
+    /**
+     * Checks whether two objects collide while respecting their hitbox offsets.
+     * @param {MovableObject|DrawableObject} firstObject - First object to check.
+     * @param {MovableObject|DrawableObject} secondObject - Second object to check.
+     * @returns {boolean} True when both hitboxes overlap.
+     */
     isCollidingWithOffset(firstObject, secondObject) {
         let first = this.getHitbox(firstObject);
         let second = this.getHitbox(secondObject);
@@ -167,6 +189,11 @@ class World {
             first.top < second.bottom;
     }
 
+    /**
+     * Checks whether the character lands on top of an enemy.
+     * @param {MovableObject} enemy - Enemy that may be jumped on.
+     * @returns {boolean} True when the character hits the enemy from above.
+     */
     isJumpingOnEnemy(enemy) {
         let characterBottom = this.character.y + this.character.height;
         let enemyTop = enemy.y;
@@ -176,6 +203,10 @@ class World {
             this.isCollidingWithOffset(this.character, enemy);
     }
 
+    /**
+     * Removes an enemy from the current level.
+     * @param {MovableObject} enemy - Enemy that should be removed.
+     */
     killEnemy(enemy) {
         let enemyIndex = this.level.enemies.indexOf(enemy);
         if (enemyIndex === -1) {

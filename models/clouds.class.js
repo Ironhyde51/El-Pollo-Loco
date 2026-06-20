@@ -1,3 +1,7 @@
+/**
+ * Represents a cloud that moves slowly across the level background.
+ * @extends MovableObject
+ */
 class Clouds extends MovableObject {
 
     y = 50;
@@ -9,6 +13,10 @@ class Clouds extends MovableObject {
         'assets/5_background/layers/4_clouds/2.png',
     ];
 
+    /**
+     * Creates a cloud at a random horizontal position.
+     * @param {number} x - Horizontal position of the cloud.
+     */
     constructor(x = Math.random() * 2500) {
         super();
         this.loadImages(this.IMAGES);
@@ -18,6 +26,9 @@ class Clouds extends MovableObject {
         this.animate();
     }
 
+    /**
+    * Moves the cloud continuously to the left.
+    */
     animate() {
         setInterval(() => {
             this.moveLeft();
