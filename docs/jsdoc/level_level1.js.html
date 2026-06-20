@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: level/level1.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: level/level1.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let level1;
+
+/**
+ * Builds the first level with enemies, clouds, backgrounds and collectibles.
+ */
+function initLevel1() {
+    level1 = new Level(
+        [
+            new Chicken(),
+            new Chicken(),
+            new Chicken(),
+            new Chicken(),
+            // new Chicken(),
+            // new Chicken(),
+            // new Chicken(),
+            new SmallChicken(),
+            new SmallChicken(),
+            new SmallChicken(),
+            new Endboss(),
+        ],
+
+        [
+            new Clouds(),
+            new Clouds(),
+            new Clouds(),
+        ],
+
+        [
+            new BackgroundObject('assets/5_background/layers/air.png', 0, 0, -719, 480),
+            new BackgroundObject('assets/5_background/layers/3_third_layer/2.png', 0, 0, -719, 480),
+            new BackgroundObject('assets/5_background/layers/2_second_layer/2.png', 0, 0, -719, 480),
+            new BackgroundObject('assets/5_background/layers/1_first_layer/2.png', 0, 0, -719, 480),
+
+            new BackgroundObject('assets/5_background/layers/air.png', 0, 0, 0, 480),
+            new BackgroundObject('assets/5_background/layers/3_third_layer/1.png', 0, 0, 0, 480),
+            new BackgroundObject('assets/5_background/layers/2_second_layer/1.png', 0, 0, 0, 480),
+            new BackgroundObject('assets/5_background/layers/1_first_layer/1.png', 0, 0, 0, 480),
+            new BackgroundObject('assets/5_background/layers/air.png', 0, 0, 719, 480),
+            new BackgroundObject('assets/5_background/layers/3_third_layer/2.png', 0, 0, 719, 480),
+            new BackgroundObject('assets/5_background/layers/2_second_layer/2.png', 0, 0, 719, 480),
+            new BackgroundObject('assets/5_background/layers/1_first_layer/2.png', 0, 0, 719, 480),
+
+            new BackgroundObject('assets/5_background/layers/air.png', 0, 0, 719 * 2, 480),
+            new BackgroundObject('assets/5_background/layers/3_third_layer/1.png', 0, 0, 719 * 2, 480),
+            new BackgroundObject('assets/5_background/layers/2_second_layer/1.png', 0, 0, 719 * 2, 480),
+            new BackgroundObject('assets/5_background/layers/1_first_layer/1.png', 0, 0, 719 * 2, 480),
+            new BackgroundObject('assets/5_background/layers/air.png', 0, 0, 719 * 3, 480),
+            new BackgroundObject('assets/5_background/layers/3_third_layer/2.png', 0, 0, 719 * 3, 480),
+            new BackgroundObject('assets/5_background/layers/2_second_layer/2.png', 0, 0, 719 * 3, 480),
+            new BackgroundObject('assets/5_background/layers/1_first_layer/2.png', 0, 0, 719 * 3, 480),
+        ],
+        [
+            // Startbereich links: kleiner Einstieg-Bogen
+            new Coin(-500, 290),
+            new Coin(-440, 250),
+            new Coin(-380, 220),
+            new Coin(-320, 250),
+            new Coin(-260, 290),
+
+            // Erste klare Sammelreihe
+            new Coin(150, 280),
+            new Coin(220, 280),
+            new Coin(290, 280),
+
+            // Kleiner Sprungbogen
+            new Coin(430, 260),
+            new Coin(500, 220),
+            new Coin(570, 190),
+            new Coin(640, 220),
+            new Coin(710, 260),
+
+            // Mittlerer Bereich: moderne Wellenform
+            new Coin(850, 300),
+            new Coin(920, 260),
+            new Coin(990, 230),
+            new Coin(1060, 260),
+            new Coin(1130, 300),
+
+            // Belohnung etwas höher
+            new Coin(1250, 210),
+            new Coin(1320, 190),
+            new Coin(1390, 210),
+
+            // Vor dem Endbereich: längere Linie zum Einsammeln beim Rennen
+            new Coin(1520, 280),
+            new Coin(1590, 280),
+            new Coin(1660, 280),
+            new Coin(1730, 280),
+
+            // Coin-Hühnchen innerhalb von x: 2000
+            // Körper
+            new Coin(1820, 280),
+            new Coin(1870, 280),
+            new Coin(1920, 280),
+            new Coin(1845, 240),
+            new Coin(1895, 240),
+
+            // Kopf
+            new Coin(1960, 225),
+            new Coin(1990, 225),
+
+            // Schnabel
+            new Coin(2000, 250),
+
+            // Beine
+            new Coin(1850, 320),
+            new Coin(1910, 320),
+
+            // Schwanz/Feder hinten
+            new Coin(1785, 250),
+            new Coin(1760, 220)
+        ],
+
+        [
+            new Bottle(-350, 0),
+            new Bottle(250, 1),
+            new Bottle(520, 0),
+            new Bottle(780, 1),
+            new Bottle(1040, 0),
+            new Bottle(1320, 1),
+            new Bottle(1600, 0),
+            new Bottle(1950, 1)
+        ],
+
+        [
+            new BottleBox(-500),
+            new BottleBox(-350),
+            new BottleBox(-200),
+            new BottleBox(-50),
+            new BottleBox(400),
+            new BottleBox(1100),
+            new BottleBox(1800)
+
+        ]
+    );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

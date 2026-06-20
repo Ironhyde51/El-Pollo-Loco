@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/world.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/world.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>class World {
+    character = new Character();
+    level = level1;
+    canvas;
+    ctx;
+    keyboard;
+    worldDraw;
+    camera_x = 0;
+    startusBar = new StatusBar();
+    statusbarCoin = new StatusbarCoin();
+    statusbarBottle = new StatusbarBottle();
+    statusbarEndboss = new StatusbarEndboss();
+    endbossWasSeen = false;
+    gameEnded = false;
+    endScreenType = '';
+    endScreenImage = new Image();
+    pepeDeathFallStarted = false;
+    throwableObjects = [];
+    bottleWasThrown = false;
+    collectedCoins = 0;
+    collectedBottles = 0;
+    maxBottles = 0;
+    worldDraw = new WorldDraw(this);
+
+    constructor(canvas, keyboard) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.keyboard = keyboard;
+        this.worldDraw = new WorldDraw(this);
+        this.gameOverImage = new Image();
+        this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
+        this.winningImage = new Image();
+        this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
+        this.nextLevelImage = new Image();
+        this.nextLevelImage.src = 'assets/You won, you lost/next-level-screen.png';
+        this.maxBottles = this.level.bottles.length;
+        this.draw();
+        this.setWorld();
+        this.checkCollisions();
+        this.checkThrowObjects();
+    }
+
+    /**
+     * Passes the current world instance to objects that need access to global game state.
+     */
+    setWorld() {
+        this.character.world = this;
+        this.level.enemies.forEach((enemy) => {
+            if (enemy instanceof Endboss) {
+                enemy.world = this;
+            }
+        });
+    }
+
+    /**
+     * Detects the first time the character gets close to the endboss and starts the showdown.
+     */
+    checkEndbossSeen() {
+        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss &amp;&amp; !this.endbossWasSeen &amp;&amp; this.character.x > endboss.x - 700) {
+            this.endbossWasSeen = true;
+            endboss.startAlert();
+            playShowdownSound();
+        }
+    }
+
+    /**
+     * Starts the interval that checks all gameplay collisions and game-end conditions.
+     */
+    checkCollisions() {
+        setInterval(() => {
+            if (this.gameEnded) {
+                return;
+            }
+            this.checkEndbossSeen();
+            this.checkEndbossAttack();
+            this.checkGameEnd();
+            this.checkEnemyCollisions();
+            this.checkCoinCollisions();
+            this.checkBottleCollisions();
+            this.checkBottleBoxCollisions();
+            this.checkThrowableObjectCollisions();
+            this.removeDestroyedThrowableObjects();
+        }, 50);
+    }
+
+    removeDestroyedThrowableObjects() {
+        this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
+    }
+
+    checkThrowableObjectCollisions() {
+        this.throwableObjects.forEach((bottle) => {
+            this.level.enemies.forEach((enemy) => {
+                if (!bottle.isSplashing &amp;&amp; this.isCollidingWithOffset(bottle, enemy)) {
+                    this.hitEnemyWithBottle(enemy);
+                    bottle.splash();
+                }
+            });
+        });
+    }
+
+    checkBottleBoxCollisions() {
+        this.level.bottleBoxes.forEach((bottleBox) => {
+            if (this.isCollidingWithOffset(this.character, bottleBox)) {
+                this.collectBottleBox(bottleBox);
+            }
+        });
+    }
+
+    checkBottleCollisions() {
+        this.level.bottles.forEach((bottle) => {
+            if (this.isCollidingWithOffset(this.character, bottle)) {
+                this.collectBottle(bottle);
+            }
+        });
+    }
+
+    checkCoinCollisions() {
+        this.level.coins.forEach((coin) => {
+            if (this.isCollidingWithOffset(this.character, coin)) {
+                this.collectCoin(coin);
+            }
+        });
+    }
+
+    checkEnemyCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (enemy instanceof Endboss) {
+                this.checkEndbossCollision(enemy);
+            } else {
+                this.checkNormalEnemyCollision(enemy);
+            }
+        });
+    }
+
+    checkEndbossCollision(endboss) {
+        if (endboss.isAttacking &amp;&amp; this.isCollidingWithOffset(this.character, endboss)) {
+            this.character.hit();
+            this.startusBar.setPercentage(this.character.energy);
+        }
+    }
+
+    checkNormalEnemyCollision(enemy) {
+        if (this.isJumpingOnEnemy(enemy)) {
+            this.killEnemy(enemy);
+            this.character.speedY = 15;
+        } else if (this.isCollidingWithOffset(this.character, enemy)) {
+            this.character.hit();
+            this.startusBar.setPercentage(this.character.energy);
+        }
+    }
+
+    /**
+     * Removes a collected coin from the level and updates the coin status bar.
+     * @param {Coin} coin - Coin that collided with the character.
+     */
+    collectCoin(coin) {
+        let coinIndex = this.level.coins.indexOf(coin);
+        if (coinIndex === -1) {
+            return;
+        }
+        this.level.coins.splice(coinIndex, 1);
+        playCoinCollectSound();
+        this.collectedCoins++;
+        this.updateCoinStatusbar();
+    }
+
+    /**
+     * Calculates and applies the current coin collection percentage.
+     */
+    updateCoinStatusbar() {
+        let totalCoins = this.collectedCoins + this.level.coins.length;
+        let percentage = totalCoins === 0 ? 0 : (this.collectedCoins / totalCoins) * 100;
+        this.statusbarCoin.setPercentage(percentage);
+    }
+
+    /**
+     * Checks whether two objects collide while respecting their hitbox offsets.
+     * @param {MovableObject|DrawableObject} firstObject - First object to check.
+     * @param {MovableObject|DrawableObject} secondObject - Second object to check.
+     * @returns {boolean} True when both hitboxes overlap.
+     */
+    isCollidingWithOffset(firstObject, secondObject) {
+        let first = this.getHitbox(firstObject);
+        let second = this.getHitbox(secondObject);
+        return first.right > second.left &amp;&amp;
+            first.bottom > second.top &amp;&amp;
+            first.left &lt; second.right &amp;&amp;
+            first.top &lt; second.bottom;
+    }
+
+    /**
+     * Checks whether the character lands on top of an enemy.
+     * @param {MovableObject} enemy - Enemy that may be jumped on.
+     * @returns {boolean} True when the character hits the enemy from above.
+     */
+    isJumpingOnEnemy(enemy) {
+        let characterBottom = this.character.y + this.character.height;
+        let enemyTop = enemy.y;
+        return this.character.speedY &lt; 0 &amp;&amp;
+            characterBottom >= enemyTop &amp;&amp;
+            characterBottom &lt;= enemyTop + 45 &amp;&amp;
+            this.isCollidingWithOffset(this.character, enemy);
+    }
+
+    /**
+     * Removes an enemy from the current level.
+     * @param {MovableObject} enemy - Enemy that should be removed.
+     */
+    killEnemy(enemy) {
+        let enemyIndex = this.level.enemies.indexOf(enemy);
+        if (enemyIndex === -1) {
+            return;
+        }
+        this.level.enemies.splice(enemyIndex, 1);
+    }
+
+    hitEnemyWithBottle(enemy) {
+        if (enemy instanceof Endboss) {
+            this.hitEndboss(enemy);
+        } else {
+            this.killEnemy(enemy);
+        }
+    }
+
+    hitEndboss(endboss) {
+        endboss.hitEndboss();
+        this.statusbarEndboss.setPercentage(endboss.energy);
+        if (endboss.isDead()) {
+            this.removeDeadEndboss(endboss);
+        }
+    }
+
+    removeDeadEndboss(endboss) {
+        setTimeout(() => {
+            this.killEnemy(endboss);
+            this.showWinningScreen();
+        }, 800);
+    }
+
+    collectBottle(bottle) {
+        let bottleIndex = this.level.bottles.indexOf(bottle);
+        if (bottleIndex === -1) {
+            return;
+        }
+        this.level.bottles.splice(bottleIndex, 1);
+        this.collectedBottles++;
+        this.updateBottleStatusbar();
+    }
+
+    updateBottleStatusbar() {
+        let percentage = this.maxBottles === 0 ? 0 : (this.collectedBottles / this.maxBottles) * 100;
+        this.statusbarBottle.setPercentage(percentage);
+    }
+
+    collectBottleBox(bottleBox) {
+        let bottleBoxIndex = this.level.bottleBoxes.indexOf(bottleBox);
+        if (bottleBoxIndex === -1) {
+            return;
+        }
+        this.level.bottleBoxes.splice(bottleBoxIndex, 1);
+        this.collectedBottles = this.maxBottles;
+        this.updateBottleStatusbar();
+    }
+
+    getHitbox(object) {
+        return {
+            left: object.x + (object.offsetLeft || 0),
+            right: object.x + object.width - (object.offsetRight || 0),
+            top: object.y + (object.offsetTop || 0),
+            bottom: object.y + object.height - (object.offsetBottom || 0)
+        };
+    }
+
+    checkThrowObjects() {
+        setInterval(() => {
+            if (this.gameEnded) {
+                return;
+            }
+            if (this.keyboard.D &amp;&amp; !this.bottleWasThrown &amp;&amp; this.collectedBottles > 0) {
+                this.throwBottle();
+                this.bottleWasThrown = true;
+            }
+            if (!this.keyboard.D) {
+                this.bottleWasThrown = false;
+            }
+        }, 1000 / 60);
+    }
+
+    throwBottle() {
+        let direction = this.character.othersDirection ? -1 : 1;
+        let x = this.character.othersDirection ? this.character.x + 20 : this.character.x + 100;
+        let y = this.character.y + 100;
+        let bottle = new ThrowableObject(x, y, direction);
+        this.throwableObjects.push(bottle);
+        this.collectedBottles--;
+        this.updateBottleStatusbar();
+    }
+
+    checkEndbossAttack() {
+        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss &amp;&amp; endboss.alertFinished &amp;&amp; this.character.x > endboss.x - 220) {
+            endboss.startAttack();
+        }
+    }
+
+    checkGameEnd() {
+        if (this.gameEnded) {
+            return;
+        }
+        if (this.character.isDead()) {
+            this.startPepeDeathFall();
+        }
+        if (this.pepeDeathFallStarted &amp;&amp; this.character.y > this.canvas.height) {
+            this.showGameOverScreen();
+        }
+    }
+
+    startPepeDeathFall() {
+        if (this.pepeDeathFallStarted) {
+            return;
+        }
+        this.pepeDeathFallStarted = true;
+    }
+
+    showGameOverScreen() {
+        this.gameEnded = true;
+        this.endScreenType = 'gameover';
+        this.endScreenImage = this.gameOverImage;
+        hideNextLevelButton();
+        hideTouchControls();
+        showHomeButton();
+        playLostSound();
+        this.worldDraw.drawEndScreen();
+    }
+
+    showWinningScreen() {
+        this.gameEnded = true;
+        this.endScreenType = 'winning';
+        this.endScreenImage = this.winningImage;
+        showNextLevelButton();
+        hideTouchControls();
+        showHomeButton();
+        playWinningSound();
+        this.worldDraw.drawEndScreen();
+    }
+
+    showNextLevelScreen() {
+        this.endScreenType = 'nextlevel';
+        this.endScreenImage = this.nextLevelImage;
+        hideNextLevelButton();
+        hideTouchControls();
+        showHomeButton();
+        playNextLevelSound();
+        this.worldDraw.drawEndScreen();
+    }
+
+    draw() {
+        this.worldDraw.draw();
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

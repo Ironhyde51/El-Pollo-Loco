@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/movable-object.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/movable-object.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Base class for drawable objects that can move, collide, take damage and play animations.
+ * @extends DrawableObject
+ */
+class MovableObject extends DrawableObject {
+    speed = 0.15;
+    othersDirection = false;
+    speedY = 0;
+    acceleration = 2.5;
+    energy = 100;
+    lastHit = 0;
+
+    /**
+     * Applies gravity by continuously updating vertical position and speed.
+     */
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+            }
+        }, 1000 / 25);
+    }
+
+    /**
+     * Checks whether the object is above the ground.
+     * @returns {boolean} True when the object is above the ground.
+     */
+    isAboveGround() {
+        return this.y &lt; 140;
+    }
+
+    /**
+     * Checks whether this object collides with another movable object.
+     * @param {MovableObject} movableObject - Object to check collision with.
+     * @returns {boolean} True when both objects overlap.
+     */
+    isColliding(movableObject) {
+        return this.x + this.width > movableObject.x &amp;&amp;
+            this.y + this.height > movableObject.y &amp;&amp;
+            this.x &lt; movableObject.x &amp;&amp;
+            this.y &lt; movableObject.y + movableObject.height;
+    }
+
+    /**
+     * Reduces energy when the object is hit and prevents repeated damage during hurt time.
+     */
+    hit() {
+        if (this.isHurt()) {
+            return;
+        }
+        this.energy -= 5;
+        if (this.energy &lt; 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+
+    /**
+     * Checks whether the object is currently in hurt state.
+     * @returns {boolean} True when the last hit was less than one second ago.
+     */
+    isHurt() {
+        let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
+        timepassed = timepassed / 1000; // Difference in s
+        return timepassed &lt; 1;
+    }
+
+    /**
+     * Checks whether the object's energy is empty.
+     * @returns {boolean} True when energy is zero.
+     */
+    isDead() {
+        return this.energy == 0;
+    }
+
+    /**
+     * Plays an animation by cycling through a list of image paths.
+     * @param {string[]} images - Image paths used for the animation.
+     */
+    playAnimation(images) {
+        let i = this.currentImage % images.length; // 0,1,2,3,4,5,0,1,2,...
+        let path = images[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }
+
+    /**
+     * Moves the object to the right and updates its direction.
+     */
+    moveRight() {
+        this.x += this.speed;
+        this.othersDirection = false;
+    }
+
+    /**
+     * Moves the object to the left.
+     */
+    moveLeft() {
+        this.x -= this.speed;
+
+    }
+
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
