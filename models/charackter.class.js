@@ -12,7 +12,7 @@ class Character extends MovableObject {
     offsetBottom = 5;
     offsetLeft = 45;
     offsetRight = 50;
-    
+
     IMAGES_IDLE = [
         'assets/2_character_pepe/1_idle/idle/I-1.png',
         'assets/2_character_pepe/1_idle/idle/I-2.png',
@@ -80,6 +80,7 @@ class Character extends MovableObject {
     walking_sound = new Audio('audio/pepe/walking1.mp3');
     landing_sound = new Audio('audio/pepe/walking.mp3');
     wasAboveGround = false;
+    jumpAnimationStarted = false;
 
     world;
     currentImage = 0;
@@ -135,44 +136,127 @@ class Character extends MovableObject {
      * Starts the input movement loop and the character animation loop.
      */
     animate() {
+        this.startMovementLoop();
+        this.startAnimationLoop();
+    }
+
+    /**
+     * Starts the movement loop for keyboard input and camera movement.
+     */
+    startMovementLoop() {
         setInterval(() => {
-            let isMoving = false;
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.othersDirection = false;
-                isMoving = true;
-            }
-            if (this.world.keyboard.LEFT && this.x > -610) {
-                this.x -= this.speed;
-                this.othersDirection = true;
-                isMoving = true;
-            }
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.jump();
-            }
-            if (isMoving || this.world.keyboard.SPACE) {
-                this.updateLastActionTime();
-            }
+            let isMoving = this.handleMovement();
+            this.handleJumpInput();
+            this.updateActionTime(isMoving);
             this.playMovementSounds(isMoving);
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
+    }
 
-
+    /**
+     * Starts the animation loop for Pepe's current state.
+     */
+    startAnimationLoop() {
         setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-            } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(this.IMAGES_WALKING);
-            } else if (this.isLongIdle()) {
-                this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else {
-                this.playAnimation(this.IMAGES_IDLE);
-            }
+            this.playCurrentAnimation();
         }, 100);
+    }
+
+    /**
+     * Handles left and right movement input.
+     * @returns {boolean} True when Pepe moved left or right.
+     */
+    handleMovement() {
+        let isMoving = false;
+        isMoving = this.moveCharacterRight() || isMoving;
+        isMoving = this.moveCharacterLeft() || isMoving;
+        return isMoving;
+    }
+
+    /**
+     * Moves Pepe right when the right key is pressed.
+     * @returns {boolean} True when Pepe moved right.
+     */
+    moveCharacterRight() {
+        if (!this.world.keyboard.RIGHT || this.x >= this.world.level.level_end_x) {
+            return false;
+        }
+        this.moveRight();
+        this.othersDirection = false;
+        return true;
+    }
+
+    /**
+     * Moves Pepe left when the left key is pressed.
+     * @returns {boolean} True when Pepe moved left.
+     */
+    moveCharacterLeft() {
+        if (!this.world.keyboard.LEFT || this.x <= -610) {
+            return false;
+        }
+        this.x -= this.speed;
+        this.othersDirection = true;
+        return true;
+    }
+
+    /**
+     * Starts a jump when the space key is pressed and Pepe is on the ground.
+     */
+    handleJumpInput() {
+        if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+            this.jump();
+            this.jumpAnimationStarted = false;
+        }
+    }
+
+    /**
+     * Updates the idle timer after movement or jump input.
+     * @param {boolean} isMoving - True when Pepe moved left or right.
+     */
+    updateActionTime(isMoving) {
+        if (isMoving || this.world.keyboard.SPACE) {
+            this.updateLastActionTime();
+        }
+    }
+
+    /**
+     * Plays the animation that matches Pepe's current state.
+     */
+    playCurrentAnimation() {
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+        } else if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else if (this.isAboveGround()) {
+            this.playJumpAnimation();
+        } else {
+            this.playGroundAnimation();
+        }
+    }
+
+    /**
+     * Starts the jump animation from the first frame while Pepe is in the air.
+     */
+    playJumpAnimation() {
+        if (!this.jumpAnimationStarted) {
+            this.currentImage = 0;
+            this.jumpAnimationStarted = true;
+        }
+        this.playAnimation(this.IMAGES_JUMPING);
+    }
+
+    /**
+     * Plays walking or idle animations while Pepe is on the ground.
+     */
+    playGroundAnimation() {
+        this.jumpAnimationStarted = false;
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(this.IMAGES_WALKING);
+        } else if (this.isLongIdle()) {
+            this.playAnimation(this.IMAGES_LONG_IDLE);
+        } else {
+            this.playAnimation(this.IMAGES_IDLE);
+        }
     }
 
     /**

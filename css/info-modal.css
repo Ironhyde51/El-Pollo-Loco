@@ -68,6 +68,44 @@
     margin: 0 0 14px;
 }
 
+.info-controls {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 14px;
+}
+
+.info-control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.info-control-icons {
+    display: flex;
+    gap: 6px;
+    min-width: 82px;
+}
+
+.info-control-icons img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+.info-rules {
+    padding-left: 18px;
+    font-size: 15px;
+}
+
+.info-inline-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
 .info-disclaimer {
     margin-top: 48px;
     font-size: 14px;
