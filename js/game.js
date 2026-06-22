@@ -7,7 +7,6 @@ let introMusic = new Audio('audio/world_sounds/intro.mp3');
 let backgroundMusic = new Audio('audio/world_sounds/background.mp3');
 let lostSound = new Audio('audio/world_sounds/lost.mp3');
 let winningSound = new Audio('audio/world_sounds/winning.mp3');
-let nextLevelSound = new Audio('audio/world_sounds/nuklea-level.mp3');
 let coinCollectSound = new Audio('audio/world_sounds/coin_collect.mp3');
 let showdownSound = new Audio('audio/world_sounds/showdown.mp3');
 introMusic.loop = true;
@@ -16,7 +15,6 @@ introMusic.volume = 0.4;
 backgroundMusic.volume = 0.4;
 lostSound.volume = 0.5;
 winningSound.volume = 0.5;
-nextLevelSound.volume = 0.5;
 coinCollectSound.volume = 0.5;
 showdownSound.volume = 0.6;
 
@@ -25,7 +23,6 @@ let allSounds = [
     backgroundMusic,
     lostSound,
     winningSound,
-    nextLevelSound,
     coinCollectSound,
     showdownSound
 ];
@@ -140,11 +137,6 @@ function playWinningSound() {
     playSound(winningSound);
 }
 
-function playNextLevelSound() {
-    stopSound(winningSound);
-    playSound(nextLevelSound);
-}
-
 function playCoinCollectSound() {
     playSound(coinCollectSound);
 }
@@ -160,7 +152,6 @@ function restartBackgroundMusic() {
     stopSound(introMusic);
     stopSound(lostSound);
     stopSound(winningSound);
-    stopSound(nextLevelSound);
     stopSound(backgroundMusic);
     playBackgroundMusic();
 }
@@ -189,7 +180,6 @@ function restartGame() {
     if (world) {
         world.gameEnded = true;
     }
-    hideNextLevelButton();
     hideHomeButton();
     showTouchControls();
     restartBackgroundMusic();
@@ -208,20 +198,6 @@ function init() {
     };
     ctx = canvas.getContext("2d");
     world = new World(canvas, keyboard);
-}
-
-/**
- * Shows the next-level button on winning-related screens.
- */
-function showNextLevelButton() {
-    document.getElementById("nextLevelButton").classList.remove("d-none");
-}
-
-/**
- * Hides the next-level button.
- */
-function hideNextLevelButton() {
-    document.getElementById("nextLevelButton").classList.add("d-none");
 }
 
 /**
@@ -267,15 +243,6 @@ function closeInfoModal() {
 }
 
 /**
- * Shows the next-level screen after the winning screen.
- */
-function openNextLevelScreen() {
-    if (world) {
-        world.showNextLevelScreen();
-    }
-}
-
-/**
  * Returns from an endscreen to the start screen and resets UI controls.
  */
 function goHome() {
@@ -283,12 +250,10 @@ function goHome() {
         world.gameEnded = true;
     }
     hideHomeButton();
-    hideNextLevelButton();
     hideTouchControls();
     stopSound(backgroundMusic);
     stopSound(lostSound);
     stopSound(winningSound);
-    stopSound(nextLevelSound);
     gameStarted = false;
     keyboard = new Keyboard();
     document.getElementById("startScreen").classList.remove("d-none");

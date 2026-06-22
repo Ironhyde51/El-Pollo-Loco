@@ -11,7 +11,7 @@ class Endboss extends MovableObject {
     isAlerting = false;
     alertFinished = false;
     world;
-    speed = 2;
+    speed = 2.7;
 
 
     IMAGES_WALKING = [
@@ -102,7 +102,7 @@ class Endboss extends MovableObject {
         this.isAttacking = true;
         setTimeout(() => {
             this.isAttacking = false;
-        }, 1000);
+        }, 1400);
     }
 
     /**
@@ -139,7 +139,7 @@ class Endboss extends MovableObject {
             if (!this.world || this.isDead()) {
                 return;
             }
-            if (this.world.endbossWasSeen && this.alertFinished && this.x > this.world.character.x + 120) {
+            if (this.world.endbossWasSeen && this.alertFinished && this.x > this.world.character.x + 40) {
                 this.x -= this.speed;
             }
         }, 1000 / 60);

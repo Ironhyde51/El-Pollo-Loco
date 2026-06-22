@@ -113,23 +113,14 @@ function initLevel1() {
 
         [
             new Bottle(-350, 0),
-            new Bottle(250, 1),
-            new Bottle(520, 0),
-            new Bottle(780, 1),
-            new Bottle(1040, 0),
-            new Bottle(1320, 1),
-            new Bottle(1600, 0),
-            new Bottle(1950, 1)
+            new Bottle(420, 1),
+            new Bottle(880, 0),
+            new Bottle(1340, 1),
+            new Bottle(1850, 0)
         ],
 
         [
-            new BottleBox(-500),
-            new BottleBox(-350),
-            new BottleBox(-200),
-            new BottleBox(-50),
-            new BottleBox(400),
-            new BottleBox(1100),
-            new BottleBox(1800)
+            new BottleBox(-500)
 
         ]
     );

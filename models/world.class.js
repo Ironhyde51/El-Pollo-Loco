@@ -17,6 +17,8 @@ class World {
     pepeDeathFallStarted = false;
     throwableObjects = [];
     bottleWasThrown = false;
+    lastBottleThrowTime = 0;
+    bottleThrowCooldown = 600;
     collectedCoins = 0;
     collectedBottles = 0;
     maxBottles = 0;
@@ -31,8 +33,6 @@ class World {
         this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
         this.winningImage = new Image();
         this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
-        this.nextLevelImage = new Image();
-        this.nextLevelImage.src = 'assets/You won, you lost/next-level-screen.png';
         this.maxBottles = this.level.bottles.length;
         this.draw();
         this.setWorld();
@@ -117,10 +117,25 @@ class World {
 
     checkCoinCollisions() {
         this.level.coins.forEach((coin) => {
-            if (this.isCollidingWithOffset(this.character, coin)) {
+            if (this.isCharacterCollectingCoin(coin)) {
                 this.collectCoin(coin);
             }
         });
+    }
+
+    isCharacterCollectingCoin(coin) {
+        let character = {
+            x: this.character.x,
+            y: this.character.y,
+            width: this.character.width,
+            height: this.character.height,
+            offsetTop: 140,
+            offsetBottom: 55,
+            offsetLeft: 30,
+            offsetRight: 30
+        };
+
+        return this.isCollidingWithOffset(character, coin);
     }
 
     checkEnemyCollisions() {
@@ -143,7 +158,7 @@ class World {
     checkNormalEnemyCollision(enemy) {
         if (this.isJumpingOnEnemy(enemy)) {
             this.killEnemy(enemy);
-            this.character.speedY = 15;
+            this.character.speedY = 20;
         } else if (this.isCollidingWithOffset(this.character, enemy)) {
             this.character.hit();
             this.startusBar.setPercentage(this.character.energy);
@@ -195,11 +210,12 @@ class World {
      * @returns {boolean} True when the character hits the enemy from above.
      */
     isJumpingOnEnemy(enemy) {
-        let characterBottom = this.character.y + this.character.height;
-        let enemyTop = enemy.y;
+        let characterHitbox = this.getHitbox(this.character);
+        let enemyHitbox = this.getHitbox(enemy);
+
         return this.character.speedY < 0 &&
-            characterBottom >= enemyTop &&
-            characterBottom <= enemyTop + 45 &&
+            characterHitbox.bottom >= enemyHitbox.top &&
+            characterHitbox.bottom <= enemyHitbox.top + 45 &&
             this.isCollidingWithOffset(this.character, enemy);
     }
 
@@ -277,14 +293,24 @@ class World {
             if (this.gameEnded) {
                 return;
             }
-            if (this.keyboard.D && !this.bottleWasThrown && this.collectedBottles > 0) {
+            if (this.canThrowBottle()) {
                 this.throwBottle();
                 this.bottleWasThrown = true;
+                this.lastBottleThrowTime = new Date().getTime();
             }
             if (!this.keyboard.D) {
                 this.bottleWasThrown = false;
             }
         }, 1000 / 60);
+    }
+
+    canThrowBottle() {
+        let timePassed = new Date().getTime() - this.lastBottleThrowTime;
+
+        return this.keyboard.D &&
+            !this.bottleWasThrown &&
+            this.collectedBottles > 0 &&
+            timePassed >= this.bottleThrowCooldown;
     }
 
     throwBottle() {
@@ -299,7 +325,7 @@ class World {
 
     checkEndbossAttack() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && endboss.alertFinished && this.character.x > endboss.x - 220) {
+        if (endboss && endboss.alertFinished && this.character.x > endboss.x - 320) {
             endboss.startAttack();
         }
     }
@@ -327,7 +353,6 @@ class World {
         this.gameEnded = true;
         this.endScreenType = 'gameover';
         this.endScreenImage = this.gameOverImage;
-        hideNextLevelButton();
         hideTouchControls();
         showHomeButton();
         playLostSound();
@@ -338,20 +363,9 @@ class World {
         this.gameEnded = true;
         this.endScreenType = 'winning';
         this.endScreenImage = this.winningImage;
-        showNextLevelButton();
         hideTouchControls();
         showHomeButton();
         playWinningSound();
-        this.worldDraw.drawEndScreen();
-    }
-
-    showNextLevelScreen() {
-        this.endScreenType = 'nextlevel';
-        this.endScreenImage = this.nextLevelImage;
-        hideNextLevelButton();
-        hideTouchControls();
-        showHomeButton();
-        playNextLevelSound();
         this.worldDraw.drawEndScreen();
     }
 

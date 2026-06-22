@@ -81,28 +81,6 @@ canvas {
     background: rgba(122, 27, 0, 0.9);
 }
 
-.next-level-button {
-    position: absolute;
-    left: 50%;
-    bottom: 48px;
-    transform: translateX(-50%);
-    z-index: 30;
-    width: 220px;
-    height: 50px;
-    border: 3px solid #ffd43b;
-    border-radius: 8px;
-    background: rgba(42, 11, 0, 0.88);
-    color: #ffd43b;
-    cursor: pointer;
-    font-family: 'Rye', serif;
-    font-size: 24px;
-    text-shadow: 1px 1px 0 #160600;
-}
-
-.next-level-button:hover {
-    background: rgba(122, 27, 0, 0.92);
-}
-
 .home-button {
     position: absolute;
     left: 24px;
@@ -207,10 +185,6 @@ canvas {
     right: 72px;
 }
 
-.game-container:fullscreen .next-level-button {
-    bottom: calc((100vh - min(100vh, 66.67vw)) / 2 + 48px);
-}
-
 .start-screen {
     position: absolute;
     inset: 0;
@@ -222,6 +196,22 @@ canvas {
     height: 100%;
     display: block;
     object-fit: cover;
+}
+
+.start-hint {
+    position: absolute;
+    right: 24px;
+    bottom: 34px;
+    max-width: calc(100% - 320px);
+    padding: 10px 18px;
+    border: 2px solid #ffd43b;
+    border-radius: 8px;
+    background: rgba(42, 11, 0, 0.82);
+    color: #ffd43b;
+    font-family: 'Rye', serif;
+    font-size: 18px;
+    text-align: center;
+    text-shadow: 1px 1px 0 #160600;
 }
 
 .controls-overview {
