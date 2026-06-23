@@ -1846,7 +1846,7 @@
     
 
     
-    <h4 class="name" id="splash"><span class="type-signature"></span>splash<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="registerBreakSound"><span class="type-signature"></span>registerBreakSound<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1854,7 +1854,7 @@
 
 
 <div class="description">
-    Triggers the splash animation, plays the break sound, and schedules removal of the bottle from the world.
+    Registers the bottle break sound so it follows the global mute button.
 </div>
 
 
@@ -1898,7 +1898,95 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line97">line 97</a>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line57">line 57</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="splash"><span class="type-signature"></span>splash<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggers the splash animation, plays the break sound and schedules bottle removal.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -1986,7 +2074,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line86">line 86</a>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -2074,7 +2162,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line63">line 63</a>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line77">line 77</a>
     </li></ul></dd>
     
 
@@ -2162,7 +2250,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line54">line 54</a>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -2206,7 +2294,7 @@
 
 
 <div class="description">
-    Advances position and speed by one tick; plays break sound when near ground.
+    Advances position and speed by one tick and plays the break sound near the ground.
 </div>
 
 
@@ -2250,7 +2338,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line74">line 74</a>
+        <a href="models_throwable-object.class.js.html">models/throwable-object.class.js</a>, <a href="models_throwable-object.class.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -2296,13 +2384,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 23 2026 11:19:15 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

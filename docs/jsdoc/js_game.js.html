@@ -35,7 +35,6 @@ let introMusic = new Audio('audio/world_sounds/intro.mp3');
 let backgroundMusic = new Audio('audio/world_sounds/background.mp3');
 let lostSound = new Audio('audio/world_sounds/lost.mp3');
 let winningSound = new Audio('audio/world_sounds/winning.mp3');
-let nextLevelSound = new Audio('audio/world_sounds/nuklea-level.mp3');
 let coinCollectSound = new Audio('audio/world_sounds/coin_collect.mp3');
 let showdownSound = new Audio('audio/world_sounds/showdown.mp3');
 introMusic.loop = true;
@@ -44,7 +43,6 @@ introMusic.volume = 0.4;
 backgroundMusic.volume = 0.4;
 lostSound.volume = 0.5;
 winningSound.volume = 0.5;
-nextLevelSound.volume = 0.5;
 coinCollectSound.volume = 0.5;
 showdownSound.volume = 0.6;
 
@@ -53,12 +51,22 @@ let allSounds = [
     backgroundMusic,
     lostSound,
     winningSound,
-    nextLevelSound,
     coinCollectSound,
     showdownSound
 ];
 
 let isMuted = localStorage.getItem('isMuted') === 'true';
+
+/**
+ * Adds a sound to the global mute handling.
+ * @param {HTMLAudioElement} sound - Audio object that should follow the mute state.
+ */
+function registerSound(sound) {
+    if (!allSounds.includes(sound)) {
+        allSounds.push(sound);
+    }
+    sound.muted = isMuted;
+}
 
 /**
  * Applies the current mute state to all globally managed game sounds and updates the mute button.
@@ -99,8 +107,10 @@ function toggleMute() {
  */
 function playSound(sound, restart = true) {
     if (isMuted) {
+        sound.pause();
         return;
     }
+    registerSound(sound);
     sound.muted = false;
     if (restart) {
         sound.currentTime = 0;
@@ -141,29 +151,39 @@ function playBackgroundMusic() {
     });
 }
 
+/**
+ * Starts the intro music on the start screen.
+ */
 function playIntroMusic() {
     playSound(introMusic, false);
 }
 
+/**
+ * Stops gameplay music and plays the losing sound.
+ */
 function playLostSound() {
     stopSound(backgroundMusic);
     playSound(lostSound);
 }
 
+/**
+ * Stops gameplay music and plays the winning sound.
+ */
 function playWinningSound() {
     stopSound(backgroundMusic);
     playSound(winningSound);
 }
 
-function playNextLevelSound() {
-    stopSound(winningSound);
-    playSound(nextLevelSound);
-}
-
+/**
+ * Plays the sound for collecting a coin.
+ */
 function playCoinCollectSound() {
     playSound(coinCollectSound);
 }
 
+/**
+ * Plays the showdown sound when the endboss appears.
+ */
 function playShowdownSound() {
     playSound(showdownSound);
 }
@@ -175,7 +195,6 @@ function restartBackgroundMusic() {
     stopSound(introMusic);
     stopSound(lostSound);
     stopSound(winningSound);
-    stopSound(nextLevelSound);
     stopSound(backgroundMusic);
     playBackgroundMusic();
 }
@@ -204,7 +223,6 @@ function restartGame() {
     if (world) {
         world.gameEnded = true;
     }
-    hideNextLevelButton();
     hideHomeButton();
     showTouchControls();
     restartBackgroundMusic();
@@ -213,6 +231,9 @@ function restartGame() {
     init();
 }
 
+/**
+ * Initializes the level, canvas context and world instance.
+ */
 function init() {
     initLevel1();
     canvas = document.getElementById("canvas");
@@ -223,20 +244,6 @@ function init() {
     };
     ctx = canvas.getContext("2d");
     world = new World(canvas, keyboard);
-}
-
-/**
- * Shows the next-level button on winning-related screens.
- */
-function showNextLevelButton() {
-    document.getElementById("nextLevelButton").classList.remove("d-none");
-}
-
-/**
- * Hides the next-level button.
- */
-function hideNextLevelButton() {
-    document.getElementById("nextLevelButton").classList.add("d-none");
 }
 
 /**
@@ -282,15 +289,6 @@ function closeInfoModal() {
 }
 
 /**
- * Shows the next-level screen after the winning screen.
- */
-function openNextLevelScreen() {
-    if (world) {
-        world.showNextLevelScreen();
-    }
-}
-
-/**
  * Returns from an endscreen to the start screen and resets UI controls.
  */
 function goHome() {
@@ -298,17 +296,18 @@ function goHome() {
         world.gameEnded = true;
     }
     hideHomeButton();
-    hideNextLevelButton();
     hideTouchControls();
     stopSound(backgroundMusic);
     stopSound(lostSound);
     stopSound(winningSound);
-    stopSound(nextLevelSound);
     gameStarted = false;
     keyboard = new Keyboard();
     document.getElementById("startScreen").classList.remove("d-none");
 }
 
+/**
+ * Toggles fullscreen mode for the game container.
+ */
 function toggleFullscreen() {
     let gameContainer = document.querySelector(".game-container");
 
@@ -319,27 +318,38 @@ function toggleFullscreen() {
     }
 }
 
+/**
+ * Updates the fullscreen button icon and accessibility text.
+ */
 function updateFullscreenButton() {
     let fullscreenButton = document.getElementById("fullscreenButton");
-
     if (!fullscreenButton) {
         return;
     }
-
     fullscreenButton.innerHTML = document.fullscreenElement ? "&amp;times;" : "&amp;#x26F6;";
     fullscreenButton.title = document.fullscreenElement ? "Fullscreen beenden" : "Fullscreen umschalten";
     fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
 }
 
+/**
+ * Updates the fullscreen button whenever fullscreen mode changes.
+ */
 document.addEventListener("fullscreenchange", updateFullscreenButton);
 
+/**
+ * Handles keyboard input for starting, restarting and controlling the game.
+ */
 document.addEventListener("keydown", (event) => {
+    if (event.key == " " &amp;&amp; world &amp;&amp; world.gameEnded) {
+        event.preventDefault();
+        restartGame();
+        return;
+    }
     if (event.key == " " &amp;&amp; !gameStarted) {
         event.preventDefault();
         startGame();
         return;
     }
-
     if (event.key == "ArrowRight") {
         keyboard.RIGHT = true;
     }
@@ -360,8 +370,10 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+/**
+ * Resets keyboard input states when movement or action keys are released.
+ */
 document.addEventListener("keyup", (event) => {
-
     if (event.key == "ArrowRight") {
         keyboard.RIGHT = false;
     }
@@ -381,6 +393,10 @@ document.addEventListener("keyup", (event) => {
         keyboard.D = false;
     }
 });
+
+/**
+ * Applies the saved mute setting when the page loads.
+ */
 applyMuteState();
 </code></pre>
         </article>
@@ -392,13 +408,13 @@ applyMuteState();
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 23 2026 11:19:15 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

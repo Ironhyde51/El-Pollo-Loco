@@ -75,10 +75,22 @@ class ThrowableObject extends MovableObject {
     this.x = x;
     this.y = y;
     this.direction = direction;
+    this.registerBreakSound();
     this.throw();
   }
 
-  /** Initialises throw physics and starts both the physics and animation loops. */
+  /**
+   * Registers the bottle break sound so it follows the global mute button.
+   */
+  registerBreakSound() {
+    if (typeof registerSound === 'function') {
+      registerSound(this.breakSound);
+    }
+  }
+
+  /**
+   * Initialises throw physics and starts both the physics and animation loops.
+   */
   throw() {
     this.speedY = 15;
     this.acceleration = 1;
@@ -87,7 +99,9 @@ class ThrowableObject extends MovableObject {
     this.startAnimationLoop();
   }
 
-  /** Moves the bottle along its parabolic trajectory each physics tick. */
+  /**
+   * Moves the bottle along its parabolic trajectory each physics tick.
+   */
   startPhysicsLoop() {
     this.physicsInterval = setInterval(() => {
       if (this.y >= this.groundY) {
@@ -98,19 +112,22 @@ class ThrowableObject extends MovableObject {
     }, 1000 / 60);
   }
 
-  /** Advances position and speed by one tick; plays break sound when near ground. */
+  /**
+   * Advances position and speed by one tick and plays the break sound near the ground.
+   */
   tickPhysics() {
     this.y -= this.speedY;
     this.speedY -= this.acceleration;
     this.x += this.speedX * this.direction;
     if (this.y >= this.groundY - 30 &amp;&amp; !this.soundTriggered) {
       this.soundTriggered = true;
-      this.breakSound.currentTime = 0;
-      this.breakSound.play().catch(() => {});
+      playSound(this.breakSound);
     }
   }
 
-  /** Cycles through the appropriate animation frames each animation tick. */
+  /**
+   * Cycles through the appropriate animation frames each animation tick.
+   */
   startAnimationLoop() {
     this.animationInterval = setInterval(() => {
       if (this.isSplashing) {
@@ -121,7 +138,9 @@ class ThrowableObject extends MovableObject {
     }, 50);
   }
 
-  /** Triggers the splash animation, plays the break sound, and schedules removal of the bottle from the world. */
+  /**
+   * Triggers the splash animation, plays the break sound and schedules bottle removal.
+   */
   splash() {
     this.isSplashing = true;
     this.speedY = 0;
@@ -129,8 +148,7 @@ class ThrowableObject extends MovableObject {
     clearInterval(this.physicsInterval);
     if (!this.soundTriggered) {
       this.soundTriggered = true;
-      this.breakSound.currentTime = 0;
-      this.breakSound.play().catch(() => {});
+      playSound(this.breakSound);
     }
     setTimeout(() => {
       clearInterval(this.animationInterval);
@@ -148,13 +166,13 @@ class ThrowableObject extends MovableObject {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 23 2026 11:19:15 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

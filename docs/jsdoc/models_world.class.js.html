@@ -26,7 +26,10 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>class World {
+            <pre class="prettyprint source linenums"><code>/**
+ * Main game world that connects the character, level, status bars, collisions and drawing logic.
+ */
+class World {
     character = new Character();
     level = level1;
     canvas;
@@ -45,11 +48,18 @@
     pepeDeathFallStarted = false;
     throwableObjects = [];
     bottleWasThrown = false;
+    lastBottleThrowTime = 0;
+    bottleThrowCooldown = 600;
     collectedCoins = 0;
     collectedBottles = 0;
     maxBottles = 0;
     worldDraw = new WorldDraw(this);
 
+    /**
+     * Creates the game world and starts drawing, collision checks and throwing logic.
+     * @param {HTMLCanvasElement} canvas - Canvas where the game is drawn.
+     * @param {Keyboard} keyboard - Keyboard input object used to control the character.
+     */
     constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -59,8 +69,6 @@
         this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
         this.winningImage = new Image();
         this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
-        this.nextLevelImage = new Image();
-        this.nextLevelImage.src = 'assets/You won, you lost/next-level-screen.png';
         this.maxBottles = this.level.bottles.length;
         this.draw();
         this.setWorld();
@@ -112,10 +120,16 @@
         }, 50);
     }
 
+    /**
+     * Removes bottles that finished their splash animation.
+     */
     removeDestroyedThrowableObjects() {
         this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
     }
 
+    /**
+     * Checks whether thrown bottles hit enemies.
+     */
     checkThrowableObjectCollisions() {
         this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
@@ -127,6 +141,9 @@
         });
     }
 
+    /**
+     * Checks whether Pepe collides with bottle boxes.
+     */
     checkBottleBoxCollisions() {
         this.level.bottleBoxes.forEach((bottleBox) => {
             if (this.isCollidingWithOffset(this.character, bottleBox)) {
@@ -135,6 +152,9 @@
         });
     }
 
+    /**
+     * Checks whether Pepe collects bottles.
+     */
     checkBottleCollisions() {
         this.level.bottles.forEach((bottle) => {
             if (this.isCollidingWithOffset(this.character, bottle)) {
@@ -143,14 +163,40 @@
         });
     }
 
+    /**
+     * Checks whether Pepe collects coins.
+     */
     checkCoinCollisions() {
         this.level.coins.forEach((coin) => {
-            if (this.isCollidingWithOffset(this.character, coin)) {
+            if (this.isCharacterCollectingCoin(coin)) {
                 this.collectCoin(coin);
             }
         });
     }
 
+    /**
+     * Checks coin collection with a smaller character hitbox.
+     * @param {Coin} coin - Coin that may be collected.
+     * @returns {boolean} True when Pepe's coin hitbox touches the coin.
+     */
+    isCharacterCollectingCoin(coin) {
+        let character = {
+            x: this.character.x,
+            y: this.character.y,
+            width: this.character.width,
+            height: this.character.height,
+            offsetTop: 140,
+            offsetBottom: 55,
+            offsetLeft: 30,
+            offsetRight: 30
+        };
+
+        return this.isCollidingWithOffset(character, coin);
+    }
+
+    /**
+     * Checks collisions between Pepe and all enemies.
+     */
     checkEnemyCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (enemy instanceof Endboss) {
@@ -161,6 +207,10 @@
         });
     }
 
+    /**
+     * Checks whether the endboss attack hits Pepe.
+     * @param {Endboss} endboss - Endboss that may hit Pepe.
+     */
     checkEndbossCollision(endboss) {
         if (endboss.isAttacking &amp;&amp; this.isCollidingWithOffset(this.character, endboss)) {
             this.character.hit();
@@ -168,10 +218,14 @@
         }
     }
 
+    /**
+     * Handles stomp and side collisions with normal enemies.
+     * @param {MovableObject} enemy - Enemy that collides with Pepe.
+     */
     checkNormalEnemyCollision(enemy) {
         if (this.isJumpingOnEnemy(enemy)) {
             this.killEnemy(enemy);
-            this.character.speedY = 15;
+            this.character.speedY = 20;
         } else if (this.isCollidingWithOffset(this.character, enemy)) {
             this.character.hit();
             this.startusBar.setPercentage(this.character.energy);
@@ -223,11 +277,12 @@
      * @returns {boolean} True when the character hits the enemy from above.
      */
     isJumpingOnEnemy(enemy) {
-        let characterBottom = this.character.y + this.character.height;
-        let enemyTop = enemy.y;
+        let characterHitbox = this.getHitbox(this.character);
+        let enemyHitbox = this.getHitbox(enemy);
+
         return this.character.speedY &lt; 0 &amp;&amp;
-            characterBottom >= enemyTop &amp;&amp;
-            characterBottom &lt;= enemyTop + 45 &amp;&amp;
+            characterHitbox.bottom >= enemyHitbox.top &amp;&amp;
+            characterHitbox.bottom &lt;= enemyHitbox.top + 45 &amp;&amp;
             this.isCollidingWithOffset(this.character, enemy);
     }
 
@@ -243,6 +298,10 @@
         this.level.enemies.splice(enemyIndex, 1);
     }
 
+    /**
+     * Applies a bottle hit to a normal enemy or the endboss.
+     * @param {MovableObject} enemy - Enemy hit by a bottle.
+     */
     hitEnemyWithBottle(enemy) {
         if (enemy instanceof Endboss) {
             this.hitEndboss(enemy);
@@ -251,6 +310,10 @@
         }
     }
 
+    /**
+     * Applies bottle damage to the endboss and updates the endboss status bar.
+     * @param {Endboss} endboss - Endboss hit by a bottle.
+     */
     hitEndboss(endboss) {
         endboss.hitEndboss();
         this.statusbarEndboss.setPercentage(endboss.energy);
@@ -259,6 +322,10 @@
         }
     }
 
+    /**
+     * Removes the dead endboss after the death animation and shows the winning screen.
+     * @param {Endboss} endboss - Endboss that should be removed.
+     */
     removeDeadEndboss(endboss) {
         setTimeout(() => {
             this.killEnemy(endboss);
@@ -266,6 +333,10 @@
         }, 800);
     }
 
+    /**
+     * Collects a bottle and updates the bottle status bar.
+     * @param {Bottle} bottle - Bottle that collided with Pepe.
+     */
     collectBottle(bottle) {
         let bottleIndex = this.level.bottles.indexOf(bottle);
         if (bottleIndex === -1) {
@@ -276,11 +347,18 @@
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Updates the bottle status bar based on collected bottles.
+     */
     updateBottleStatusbar() {
         let percentage = this.maxBottles === 0 ? 0 : (this.collectedBottles / this.maxBottles) * 100;
         this.statusbarBottle.setPercentage(percentage);
     }
 
+    /**
+     * Collects a bottle box and refills Pepe's bottles.
+     * @param {BottleBox} bottleBox - Bottle box that collided with Pepe.
+     */
     collectBottleBox(bottleBox) {
         let bottleBoxIndex = this.level.bottleBoxes.indexOf(bottleBox);
         if (bottleBoxIndex === -1) {
@@ -291,6 +369,11 @@
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Builds a collision hitbox from object position, size and offsets.
+     * @param {MovableObject|DrawableObject} object - Object whose hitbox is calculated.
+     * @returns {{left: number, right: number, top: number, bottom: number}} Calculated hitbox.
+     */
     getHitbox(object) {
         return {
             left: object.x + (object.offsetLeft || 0),
@@ -300,14 +383,18 @@
         };
     }
 
+    /**
+     * Starts the interval that handles bottle throwing.
+     */
     checkThrowObjects() {
         setInterval(() => {
             if (this.gameEnded) {
                 return;
             }
-            if (this.keyboard.D &amp;&amp; !this.bottleWasThrown &amp;&amp; this.collectedBottles > 0) {
+            if (this.canThrowBottle()) {
                 this.throwBottle();
                 this.bottleWasThrown = true;
+                this.lastBottleThrowTime = new Date().getTime();
             }
             if (!this.keyboard.D) {
                 this.bottleWasThrown = false;
@@ -315,6 +402,22 @@
         }, 1000 / 60);
     }
 
+    /**
+     * Checks bottle stock, key input and throw cooldown.
+     * @returns {boolean} True when Pepe can throw a bottle.
+     */
+    canThrowBottle() {
+        let timePassed = new Date().getTime() - this.lastBottleThrowTime;
+
+        return this.keyboard.D &amp;&amp;
+            !this.bottleWasThrown &amp;&amp;
+            this.collectedBottles > 0 &amp;&amp;
+            timePassed >= this.bottleThrowCooldown;
+    }
+
+    /**
+     * Creates and throws a bottle in Pepe's current direction.
+     */
     throwBottle() {
         let direction = this.character.othersDirection ? -1 : 1;
         let x = this.character.othersDirection ? this.character.x + 20 : this.character.x + 100;
@@ -325,13 +428,19 @@
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Starts the endboss attack when Pepe is close enough.
+     */
     checkEndbossAttack() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss &amp;&amp; endboss.alertFinished &amp;&amp; this.character.x > endboss.x - 220) {
+        if (endboss &amp;&amp; endboss.alertFinished &amp;&amp; this.character.x > endboss.x - 320) {
             endboss.startAttack();
         }
     }
 
+    /**
+     * Checks whether Pepe died and whether the game-over screen should be shown.
+     */
     checkGameEnd() {
         if (this.gameEnded) {
             return;
@@ -344,6 +453,9 @@
         }
     }
 
+    /**
+     * Starts Pepe's death fall once.
+     */
     startPepeDeathFall() {
         if (this.pepeDeathFallStarted) {
             return;
@@ -351,38 +463,35 @@
         this.pepeDeathFallStarted = true;
     }
 
+    /**
+     * Stops the game and draws the game-over screen.
+     */
     showGameOverScreen() {
         this.gameEnded = true;
         this.endScreenType = 'gameover';
         this.endScreenImage = this.gameOverImage;
-        hideNextLevelButton();
         hideTouchControls();
         showHomeButton();
         playLostSound();
         this.worldDraw.drawEndScreen();
     }
 
+    /**
+     * Stops the game and draws the winning screen.
+     */
     showWinningScreen() {
         this.gameEnded = true;
         this.endScreenType = 'winning';
         this.endScreenImage = this.winningImage;
-        showNextLevelButton();
         hideTouchControls();
         showHomeButton();
         playWinningSound();
         this.worldDraw.drawEndScreen();
     }
 
-    showNextLevelScreen() {
-        this.endScreenType = 'nextlevel';
-        this.endScreenImage = this.nextLevelImage;
-        hideNextLevelButton();
-        hideTouchControls();
-        showHomeButton();
-        playNextLevelSound();
-        this.worldDraw.drawEndScreen();
-    }
-
+    /**
+     * Starts the world draw loop.
+     */
     draw() {
         this.worldDraw.draw();
     }
@@ -397,13 +506,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideNextLevelButton">hideNextLevelButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#openNextLevelScreen">openNextLevelScreen</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showNextLevelButton">showNextLevelButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jun 20 2026 16:13:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 23 2026 11:19:15 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
