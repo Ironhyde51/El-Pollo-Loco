@@ -1,3 +1,6 @@
+/**
+ * Main game world that connects the character, level, status bars, collisions and drawing logic.
+ */
 class World {
     character = new Character();
     level = level1;
@@ -24,6 +27,11 @@ class World {
     maxBottles = 0;
     worldDraw = new WorldDraw(this);
 
+    /**
+     * Creates the game world and starts drawing, collision checks and throwing logic.
+     * @param {HTMLCanvasElement} canvas - Canvas where the game is drawn.
+     * @param {Keyboard} keyboard - Keyboard input object used to control the character.
+     */
     constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
@@ -84,10 +92,16 @@ class World {
         }, 50);
     }
 
+    /**
+     * Removes bottles that finished their splash animation.
+     */
     removeDestroyedThrowableObjects() {
         this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
     }
 
+    /**
+     * Checks whether thrown bottles hit enemies.
+     */
     checkThrowableObjectCollisions() {
         this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
@@ -99,6 +113,9 @@ class World {
         });
     }
 
+    /**
+     * Checks whether Pepe collides with bottle boxes.
+     */
     checkBottleBoxCollisions() {
         this.level.bottleBoxes.forEach((bottleBox) => {
             if (this.isCollidingWithOffset(this.character, bottleBox)) {
@@ -107,6 +124,9 @@ class World {
         });
     }
 
+    /**
+     * Checks whether Pepe collects bottles.
+     */
     checkBottleCollisions() {
         this.level.bottles.forEach((bottle) => {
             if (this.isCollidingWithOffset(this.character, bottle)) {
@@ -115,6 +135,9 @@ class World {
         });
     }
 
+    /**
+     * Checks whether Pepe collects coins.
+     */
     checkCoinCollisions() {
         this.level.coins.forEach((coin) => {
             if (this.isCharacterCollectingCoin(coin)) {
@@ -123,6 +146,11 @@ class World {
         });
     }
 
+    /**
+     * Checks coin collection with a smaller character hitbox.
+     * @param {Coin} coin - Coin that may be collected.
+     * @returns {boolean} True when Pepe's coin hitbox touches the coin.
+     */
     isCharacterCollectingCoin(coin) {
         let character = {
             x: this.character.x,
@@ -138,6 +166,9 @@ class World {
         return this.isCollidingWithOffset(character, coin);
     }
 
+    /**
+     * Checks collisions between Pepe and all enemies.
+     */
     checkEnemyCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (enemy instanceof Endboss) {
@@ -148,6 +179,10 @@ class World {
         });
     }
 
+    /**
+     * Checks whether the endboss attack hits Pepe.
+     * @param {Endboss} endboss - Endboss that may hit Pepe.
+     */
     checkEndbossCollision(endboss) {
         if (endboss.isAttacking && this.isCollidingWithOffset(this.character, endboss)) {
             this.character.hit();
@@ -155,6 +190,10 @@ class World {
         }
     }
 
+    /**
+     * Handles stomp and side collisions with normal enemies.
+     * @param {MovableObject} enemy - Enemy that collides with Pepe.
+     */
     checkNormalEnemyCollision(enemy) {
         if (this.isJumpingOnEnemy(enemy)) {
             this.killEnemy(enemy);
@@ -231,6 +270,10 @@ class World {
         this.level.enemies.splice(enemyIndex, 1);
     }
 
+    /**
+     * Applies a bottle hit to a normal enemy or the endboss.
+     * @param {MovableObject} enemy - Enemy hit by a bottle.
+     */
     hitEnemyWithBottle(enemy) {
         if (enemy instanceof Endboss) {
             this.hitEndboss(enemy);
@@ -239,6 +282,10 @@ class World {
         }
     }
 
+    /**
+     * Applies bottle damage to the endboss and updates the endboss status bar.
+     * @param {Endboss} endboss - Endboss hit by a bottle.
+     */
     hitEndboss(endboss) {
         endboss.hitEndboss();
         this.statusbarEndboss.setPercentage(endboss.energy);
@@ -247,6 +294,10 @@ class World {
         }
     }
 
+    /**
+     * Removes the dead endboss after the death animation and shows the winning screen.
+     * @param {Endboss} endboss - Endboss that should be removed.
+     */
     removeDeadEndboss(endboss) {
         setTimeout(() => {
             this.killEnemy(endboss);
@@ -254,6 +305,10 @@ class World {
         }, 800);
     }
 
+    /**
+     * Collects a bottle and updates the bottle status bar.
+     * @param {Bottle} bottle - Bottle that collided with Pepe.
+     */
     collectBottle(bottle) {
         let bottleIndex = this.level.bottles.indexOf(bottle);
         if (bottleIndex === -1) {
@@ -264,11 +319,18 @@ class World {
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Updates the bottle status bar based on collected bottles.
+     */
     updateBottleStatusbar() {
         let percentage = this.maxBottles === 0 ? 0 : (this.collectedBottles / this.maxBottles) * 100;
         this.statusbarBottle.setPercentage(percentage);
     }
 
+    /**
+     * Collects a bottle box and refills Pepe's bottles.
+     * @param {BottleBox} bottleBox - Bottle box that collided with Pepe.
+     */
     collectBottleBox(bottleBox) {
         let bottleBoxIndex = this.level.bottleBoxes.indexOf(bottleBox);
         if (bottleBoxIndex === -1) {
@@ -279,6 +341,11 @@ class World {
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Builds a collision hitbox from object position, size and offsets.
+     * @param {MovableObject|DrawableObject} object - Object whose hitbox is calculated.
+     * @returns {{left: number, right: number, top: number, bottom: number}} Calculated hitbox.
+     */
     getHitbox(object) {
         return {
             left: object.x + (object.offsetLeft || 0),
@@ -288,6 +355,9 @@ class World {
         };
     }
 
+    /**
+     * Starts the interval that handles bottle throwing.
+     */
     checkThrowObjects() {
         setInterval(() => {
             if (this.gameEnded) {
@@ -304,6 +374,10 @@ class World {
         }, 1000 / 60);
     }
 
+    /**
+     * Checks bottle stock, key input and throw cooldown.
+     * @returns {boolean} True when Pepe can throw a bottle.
+     */
     canThrowBottle() {
         let timePassed = new Date().getTime() - this.lastBottleThrowTime;
 
@@ -313,6 +387,9 @@ class World {
             timePassed >= this.bottleThrowCooldown;
     }
 
+    /**
+     * Creates and throws a bottle in Pepe's current direction.
+     */
     throwBottle() {
         let direction = this.character.othersDirection ? -1 : 1;
         let x = this.character.othersDirection ? this.character.x + 20 : this.character.x + 100;
@@ -323,6 +400,9 @@ class World {
         this.updateBottleStatusbar();
     }
 
+    /**
+     * Starts the endboss attack when Pepe is close enough.
+     */
     checkEndbossAttack() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
         if (endboss && endboss.alertFinished && this.character.x > endboss.x - 320) {
@@ -330,6 +410,9 @@ class World {
         }
     }
 
+    /**
+     * Checks whether Pepe died and whether the game-over screen should be shown.
+     */
     checkGameEnd() {
         if (this.gameEnded) {
             return;
@@ -342,6 +425,9 @@ class World {
         }
     }
 
+    /**
+     * Starts Pepe's death fall once.
+     */
     startPepeDeathFall() {
         if (this.pepeDeathFallStarted) {
             return;
@@ -349,6 +435,9 @@ class World {
         this.pepeDeathFallStarted = true;
     }
 
+    /**
+     * Stops the game and draws the game-over screen.
+     */
     showGameOverScreen() {
         this.gameEnded = true;
         this.endScreenType = 'gameover';
@@ -359,6 +448,9 @@ class World {
         this.worldDraw.drawEndScreen();
     }
 
+    /**
+     * Stops the game and draws the winning screen.
+     */
     showWinningScreen() {
         this.gameEnded = true;
         this.endScreenType = 'winning';
@@ -369,6 +461,9 @@ class World {
         this.worldDraw.drawEndScreen();
     }
 
+    /**
+     * Starts the world draw loop.
+     */
     draw() {
         this.worldDraw.draw();
     }

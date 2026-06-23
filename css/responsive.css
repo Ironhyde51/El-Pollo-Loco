@@ -4,6 +4,67 @@
     }
 }
 
+@media (max-width: 760px), (max-height: 560px) {
+    h1,
+    .legal-link {
+        display: none;
+    }
+
+    body {
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .game-container {
+        width: min(100vw, 150vh);
+        height: min(100vh, 66.67vw);
+    }
+
+    .start-hint {
+        right: 12px;
+        bottom: 16px;
+        max-width: calc(100% - 260px);
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .controls-overview {
+        left: 12px;
+        bottom: 12px;
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .controls-overview div {
+        grid-template-columns: 54px 1fr;
+        gap: 6px;
+    }
+
+    .controls-overview span:first-child {
+        min-width: 36px;
+        padding: 3px 6px;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    .touch-controls {
+        left: 14px;
+        right: 14px;
+        bottom: 12px;
+    }
+
+    .touch-controls-left,
+    .touch-controls-right {
+        gap: 10px;
+    }
+
+    .touch-button {
+        width: 52px;
+        height: 52px;
+        padding: 5px;
+    }
+}
+
 @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
     .rotate-device-message {
         display: block;

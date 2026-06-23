@@ -64,7 +64,23 @@ class WorldDraw {
         world.ctx.clearRect(0, 0, world.canvas.width, world.canvas.height);
         if (world.endScreenImage && world.endScreenImage.complete) {
             world.ctx.drawImage(world.endScreenImage, 0, 0, world.canvas.width, world.canvas.height);
+            this.drawEndHint();
         }
+    }
+
+    /**
+     * Draws the retry hint directly into the canvas end screen.
+     */
+    drawEndHint() {
+        let world = this.world;
+        world.ctx.font = "22px Rye";
+        world.ctx.textAlign = "center";
+        world.ctx.fillStyle = "rgba(42, 11, 0, 0.82)";
+        world.ctx.fillRect(210, 420, 300, 42);
+        world.ctx.strokeStyle = "#ffd43b";
+        world.ctx.strokeRect(210, 420, 300, 42);
+        world.ctx.fillStyle = "#ffd43b";
+        world.ctx.fillText("Leertaste für Retry", 360, 448);
     }
 
     /**

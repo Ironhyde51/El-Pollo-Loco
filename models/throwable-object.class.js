@@ -51,14 +51,18 @@ class ThrowableObject extends MovableObject {
     this.throw();
   }
 
-  /** Registers the bottle break sound so it follows the global mute button. */
+  /**
+   * Registers the bottle break sound so it follows the global mute button.
+   */
   registerBreakSound() {
     if (typeof registerSound === 'function') {
       registerSound(this.breakSound);
     }
   }
 
-  /** Initialises throw physics and starts both the physics and animation loops. */
+  /**
+   * Initialises throw physics and starts both the physics and animation loops.
+   */
   throw() {
     this.speedY = 15;
     this.acceleration = 1;
@@ -67,7 +71,9 @@ class ThrowableObject extends MovableObject {
     this.startAnimationLoop();
   }
 
-  /** Moves the bottle along its parabolic trajectory each physics tick. */
+  /**
+   * Moves the bottle along its parabolic trajectory each physics tick.
+   */
   startPhysicsLoop() {
     this.physicsInterval = setInterval(() => {
       if (this.y >= this.groundY) {
@@ -78,7 +84,9 @@ class ThrowableObject extends MovableObject {
     }, 1000 / 60);
   }
 
-  /** Advances position and speed by one tick; plays break sound when near ground. */
+  /**
+   * Advances position and speed by one tick and plays the break sound near the ground.
+   */
   tickPhysics() {
     this.y -= this.speedY;
     this.speedY -= this.acceleration;
@@ -89,7 +97,9 @@ class ThrowableObject extends MovableObject {
     }
   }
 
-  /** Cycles through the appropriate animation frames each animation tick. */
+  /**
+   * Cycles through the appropriate animation frames each animation tick.
+   */
   startAnimationLoop() {
     this.animationInterval = setInterval(() => {
       if (this.isSplashing) {
@@ -100,7 +110,9 @@ class ThrowableObject extends MovableObject {
     }, 50);
   }
 
-  /** Triggers the splash animation, plays the break sound, and schedules removal of the bottle from the world. */
+  /**
+   * Triggers the splash animation, plays the break sound and schedules bottle removal.
+   */
   splash() {
     this.isSplashing = true;
     this.speedY = 0;

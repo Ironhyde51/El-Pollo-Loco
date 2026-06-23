@@ -29,7 +29,9 @@ class Coin extends MovableObject {
     this.animate();
   }
 
-  /** Starts the two-frame spin animation on a 600 ms interval. */
+  /**
+   * Starts the two-frame spin animation on a 600 ms interval.
+   */
   animate() {
     setInterval(() => {
       this.playAnimation(this.IMAGES);

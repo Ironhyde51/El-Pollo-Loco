@@ -123,24 +123,39 @@ function playBackgroundMusic() {
     });
 }
 
+/**
+ * Starts the intro music on the start screen.
+ */
 function playIntroMusic() {
     playSound(introMusic, false);
 }
 
+/**
+ * Stops gameplay music and plays the losing sound.
+ */
 function playLostSound() {
     stopSound(backgroundMusic);
     playSound(lostSound);
 }
 
+/**
+ * Stops gameplay music and plays the winning sound.
+ */
 function playWinningSound() {
     stopSound(backgroundMusic);
     playSound(winningSound);
 }
 
+/**
+ * Plays the sound for collecting a coin.
+ */
 function playCoinCollectSound() {
     playSound(coinCollectSound);
 }
 
+/**
+ * Plays the showdown sound when the endboss appears.
+ */
 function playShowdownSound() {
     playSound(showdownSound);
 }
@@ -188,6 +203,9 @@ function restartGame() {
     init();
 }
 
+/**
+ * Initializes the level, canvas context and world instance.
+ */
 function init() {
     initLevel1();
     canvas = document.getElementById("canvas");
@@ -259,6 +277,9 @@ function goHome() {
     document.getElementById("startScreen").classList.remove("d-none");
 }
 
+/**
+ * Toggles fullscreen mode for the game container.
+ */
 function toggleFullscreen() {
     let gameContainer = document.querySelector(".game-container");
 
@@ -269,27 +290,38 @@ function toggleFullscreen() {
     }
 }
 
+/**
+ * Updates the fullscreen button icon and accessibility text.
+ */
 function updateFullscreenButton() {
     let fullscreenButton = document.getElementById("fullscreenButton");
-
     if (!fullscreenButton) {
         return;
     }
-
     fullscreenButton.innerHTML = document.fullscreenElement ? "&times;" : "&#x26F6;";
     fullscreenButton.title = document.fullscreenElement ? "Fullscreen beenden" : "Fullscreen umschalten";
     fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
 }
 
+/**
+ * Updates the fullscreen button whenever fullscreen mode changes.
+ */
 document.addEventListener("fullscreenchange", updateFullscreenButton);
 
+/**
+ * Handles keyboard input for starting, restarting and controlling the game.
+ */
 document.addEventListener("keydown", (event) => {
+    if (event.key == " " && world && world.gameEnded) {
+        event.preventDefault();
+        restartGame();
+        return;
+    }
     if (event.key == " " && !gameStarted) {
         event.preventDefault();
         startGame();
         return;
     }
-
     if (event.key == "ArrowRight") {
         keyboard.RIGHT = true;
     }
@@ -310,8 +342,10 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+/**
+ * Resets keyboard input states when movement or action keys are released.
+ */
 document.addEventListener("keyup", (event) => {
-
     if (event.key == "ArrowRight") {
         keyboard.RIGHT = false;
     }
@@ -331,4 +365,8 @@ document.addEventListener("keyup", (event) => {
         keyboard.D = false;
     }
 });
+
+/**
+ * Applies the saved mute setting when the page loads.
+ */
 applyMuteState();
