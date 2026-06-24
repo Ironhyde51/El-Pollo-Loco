@@ -1,9 +1,20 @@
 
 /**
+ * Checks whether touch input should be ignored.
+ * @returns {boolean} True when the game is not active.
+ */
+function shouldBlockTouchInput() {
+    return !world || world.gameEnded;
+}
+
+/**
  * Enables movement to the left while the left touch button is pressed.
  */
 document.getElementById("touchLeft").addEventListener("touchstart", (event) => {
     event.preventDefault();
+    if (shouldBlockTouchInput()) {
+        return;
+    }
     keyboard.LEFT = true;
 });
 
@@ -28,6 +39,9 @@ document.getElementById("touchLeft").addEventListener("touchcancel", (event) => 
  */
 document.getElementById("touchRight").addEventListener("touchstart", (event) => {
     event.preventDefault();
+    if (shouldBlockTouchInput()) {
+        return;
+    }
     keyboard.RIGHT = true;
 });
 
@@ -52,6 +66,9 @@ document.getElementById("touchRight").addEventListener("touchcancel", (event) =>
  */
 document.getElementById("touchJump").addEventListener("touchstart", (event) => {
     event.preventDefault();
+    if (shouldBlockTouchInput()) {
+        return;
+    }
     keyboard.SPACE = true;
 });
 
@@ -76,6 +93,9 @@ document.getElementById("touchJump").addEventListener("touchcancel", (event) => 
  */
 document.getElementById("touchThrow").addEventListener("touchstart", (event) => {
     event.preventDefault();
+    if (shouldBlockTouchInput()) {
+        return;
+    }
     keyboard.D = true;
 });
 

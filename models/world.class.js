@@ -205,6 +205,7 @@ class World {
     checkEndbossCollision(endboss) {
         if (endboss.isAttacking && this.isCollidingWithOffset(this.character, endboss)) {
             this.character.hit();
+            this.character.updateLastActionTime();
             this.startusBar.setPercentage(this.character.energy);
         }
     }
@@ -216,6 +217,7 @@ class World {
     checkEnemyDamageCollision(enemy) {
         if (this.isCollidingWithOffset(this.character, enemy)) {
             this.character.hit();
+            this.character.updateLastActionTime();
             this.startusBar.setPercentage(this.character.energy);
         }
     }
@@ -415,6 +417,7 @@ class World {
         this.throwableObjects.push(bottle);
         this.collectedBottles--;
         this.updateBottleStatusbar();
+        this.character.updateLastActionTime();
     }
 
     /**

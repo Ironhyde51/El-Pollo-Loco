@@ -146,6 +146,10 @@ class Character extends MovableObject {
      */
     startMovementLoop() {
         setInterval(() => {
+            if (this.world.gameEnded || this.isDead()) {
+                this.stopCharacterSounds();
+                return;
+            }
             let isMoving = this.handleMovement();
             this.handleJumpInput();
             this.updateActionTime(isMoving);
@@ -154,6 +158,12 @@ class Character extends MovableObject {
         }, 1000 / 60);
     }
 
+    /**
+     * Stops all looping character sounds.
+     */
+    stopCharacterSounds() {
+        this.walking_sound.pause();
+    }
     /**
      * Starts the animation loop for Pepe's current state.
      */
