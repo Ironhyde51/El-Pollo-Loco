@@ -170,13 +170,32 @@ class World {
      * Checks collisions between Pepe and all enemies.
      */
     checkEnemyCollisions() {
+        if (this.checkStompCollision()) {
+            return;
+        }
         this.level.enemies.forEach((enemy) => {
             if (enemy instanceof Endboss) {
                 this.checkEndbossCollision(enemy);
             } else {
-                this.checkNormalEnemyCollision(enemy);
+                this.checkEnemyDamageCollision(enemy);
             }
         });
+    }
+
+    /**
+     * Checks whether Pepe jumps on any normal enemy before damage is checked.
+     * @returns {boolean} True when an enemy was stomped.
+     */
+    checkStompCollision() {
+        let enemy = this.level.enemies.find((enemy) =>
+            !(enemy instanceof Endboss) && this.isJumpingOnEnemy(enemy)
+        );
+        if (!enemy) {
+            return false;
+        }
+        this.killEnemy(enemy);
+        this.character.speedY = 20;
+        return true;
     }
 
     /**
@@ -191,14 +210,11 @@ class World {
     }
 
     /**
-     * Handles stomp and side collisions with normal enemies.
-     * @param {MovableObject} enemy - Enemy that collides with Pepe.
+     * Checks whether Pepe touches a normal enemy from the side.
+     * @param {MovableObject} enemy - Enemy that may damage Pepe.
      */
-    checkNormalEnemyCollision(enemy) {
-        if (this.isJumpingOnEnemy(enemy)) {
-            this.killEnemy(enemy);
-            this.character.speedY = 20;
-        } else if (this.isCollidingWithOffset(this.character, enemy)) {
+    checkEnemyDamageCollision(enemy) {
+        if (this.isCollidingWithOffset(this.character, enemy)) {
             this.character.hit();
             this.startusBar.setPercentage(this.character.energy);
         }
@@ -251,11 +267,12 @@ class World {
     isJumpingOnEnemy(enemy) {
         let characterHitbox = this.getHitbox(this.character);
         let enemyHitbox = this.getHitbox(enemy);
-
+        let stompArea = enemy instanceof SmallChicken ? 20 : 28;
         return this.character.speedY < 0 &&
             characterHitbox.bottom >= enemyHitbox.top &&
-            characterHitbox.bottom <= enemyHitbox.top + 45 &&
-            this.isCollidingWithOffset(this.character, enemy);
+            characterHitbox.bottom <= enemyHitbox.top + stompArea &&
+            characterHitbox.right > enemyHitbox.left + 8 &&
+            characterHitbox.left < enemyHitbox.right - 8;
     }
 
     /**

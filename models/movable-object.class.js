@@ -6,6 +6,7 @@ class MovableObject extends DrawableObject {
     speed = 0.15;
     othersDirection = false;
     speedY = 0;
+    groundY = 140;
     acceleration = 2.5;
     energy = 100;
     lastHit = 0;
@@ -18,8 +19,19 @@ class MovableObject extends DrawableObject {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
+                this.keepObjectOnGround();
             }
         }, 1000 / 25);
+    }
+
+    /**
+     * Keeps the object from falling below its fixed ground position.
+     */
+    keepObjectOnGround() {
+        if (this.y > this.groundY) {
+            this.y = this.groundY;
+            this.speedY = 0;
+        }
     }
 
     /**
@@ -27,7 +39,7 @@ class MovableObject extends DrawableObject {
      * @returns {boolean} True when the object is above the ground.
      */
     isAboveGround() {
-        return this.y < 140;
+        return this.y < this.groundY;
     }
 
     /**

@@ -4,7 +4,8 @@
  */
 class Character extends MovableObject {
 
-    y = 10;
+    x = 120;
+    y = 140;
     height = 300;
     speed = 5;
     energy = 100;
