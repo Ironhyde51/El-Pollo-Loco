@@ -105,12 +105,21 @@ class World {
     checkThrowableObjectCollisions() {
         this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
-                if (!bottle.isSplashing && this.isCollidingWithOffset(bottle, enemy)) {
+                if (!bottle.isSplashing && !this.isEnemyAlreadyDead(enemy) && this.isCollidingWithOffset(bottle, enemy)) {
                     this.hitEnemyWithBottle(enemy);
                     bottle.splash();
                 }
             });
         });
+    }
+
+    /**
+     * Checks whether an enemy is already in its death state.
+     * @param {MovableObject} enemy - Enemy that should be checked.
+     * @returns {boolean} True when the enemy should ignore further hits.
+     */
+    isEnemyAlreadyDead(enemy) {
+        return enemy instanceof Endboss ? enemy.isDead() : enemy.isDead;
     }
 
     /**
@@ -187,15 +196,23 @@ class World {
      * @returns {boolean} True when an enemy was stomped.
      */
     checkStompCollision() {
-        let enemy = this.level.enemies.find((enemy) =>
-            !(enemy instanceof Endboss) && this.isJumpingOnEnemy(enemy)
-        );
+        let enemy = this.findStompedEnemy();
         if (!enemy) {
             return false;
         }
         this.killEnemy(enemy);
         this.character.speedY = 20;
         return true;
+    }
+
+    /**
+     * Finds the first normal enemy that Pepe lands on while falling.
+     * @returns {MovableObject|undefined} Enemy that was stomped.
+     */
+    findStompedEnemy() {
+        return this.level.enemies.find((enemy) =>
+            !(enemy instanceof Endboss) && !enemy.isDead && this.isJumpingOnEnemy(enemy)
+        );
     }
 
     /**
@@ -215,7 +232,7 @@ class World {
      * @param {MovableObject} enemy - Enemy that may damage Pepe.
      */
     checkEnemyDamageCollision(enemy) {
-        if (this.isCollidingWithOffset(this.character, enemy)) {
+        if (!enemy.isDead && this.isCollidingWithOffset(this.character, enemy)) {
             this.character.hit();
             this.character.updateLastActionTime();
             this.startusBar.setPercentage(this.character.energy);
@@ -269,12 +286,47 @@ class World {
     isJumpingOnEnemy(enemy) {
         let characterHitbox = this.getHitbox(this.character);
         let enemyHitbox = this.getHitbox(enemy);
-        let stompArea = enemy instanceof SmallChicken ? 20 : 28;
+        let previousBottom = this.getPreviousCharacterBottom();
+        return this.isCharacterFallingOnEnemy(characterHitbox, enemyHitbox, previousBottom) &&
+            this.hasEnoughHorizontalOverlap(characterHitbox, enemyHitbox, enemy);
+    }
+
+    /**
+     * Checks whether Pepe is falling into the upper area of an enemy.
+     * @param {{left: number, right: number, top: number, bottom: number}} characterHitbox - Pepe's hitbox.
+     * @param {{left: number, right: number, top: number, bottom: number}} enemyHitbox - Enemy hitbox.
+     * @param {number} previousBottom - Pepe's bottom position from the previous gravity tick.
+     * @returns {boolean} True when Pepe falls into the enemy stomp area.
+     */
+    isCharacterFallingOnEnemy(characterHitbox, enemyHitbox, previousBottom) {
         return this.character.speedY < 0 &&
-            characterHitbox.bottom >= enemyHitbox.top &&
-            characterHitbox.bottom <= enemyHitbox.top + stompArea &&
-            characterHitbox.right > enemyHitbox.left + 8 &&
-            characterHitbox.left < enemyHitbox.right - 8;
+            previousBottom <= enemyHitbox.top + 12 &&
+            characterHitbox.bottom >= enemyHitbox.top - 10 &&
+            characterHitbox.bottom <= enemyHitbox.bottom + 10;
+    }
+
+    /**
+     * Calculates Pepe's previous bottom hitbox position.
+     * @returns {number} Previous bottom position of Pepe's hitbox.
+     */
+    getPreviousCharacterBottom() {
+        return this.character.previousY +
+            this.character.height -
+            (this.character.offsetBottom || 0);
+    }
+
+    /**
+     * Checks whether Pepe's foot center is above the enemy.
+     * @param {{left: number, right: number}} characterHitbox - Pepe's hitbox.
+     * @param {{left: number, right: number}} enemyHitbox - Enemy hitbox.
+     * @param {MovableObject} enemy - Enemy that may be stomped.
+     * @returns {boolean} True when Pepe is horizontally above the enemy.
+     */
+    hasEnoughHorizontalOverlap(characterHitbox, enemyHitbox, enemy) {
+        let characterCenter = characterHitbox.left + (characterHitbox.right - characterHitbox.left) / 2;
+        let tolerance = enemy instanceof SmallChicken ? 18 : 8;
+        return characterCenter >= enemyHitbox.left - tolerance &&
+            characterCenter <= enemyHitbox.right + tolerance;
     }
 
     /**
@@ -286,7 +338,36 @@ class World {
         if (enemyIndex === -1) {
             return;
         }
+        if (typeof enemy.die === 'function') {
+            this.removeEnemyAfterDeath(enemy);
+            return;
+        }
         this.level.enemies.splice(enemyIndex, 1);
+    }
+
+    /**
+     * Shows an enemy death image before removing the enemy from the level.
+     * @param {MovableObject} enemy - Enemy that should play its death state.
+     */
+    removeEnemyAfterDeath(enemy) {
+        if (enemy.isDead) {
+            return;
+        }
+        enemy.die();
+        setTimeout(() => {
+            this.removeEnemyFromLevel(enemy);
+        }, 500);
+    }
+
+    /**
+     * Removes an enemy object from the level enemy array.
+     * @param {MovableObject} enemy - Enemy that should be removed.
+     */
+    removeEnemyFromLevel(enemy) {
+        let enemyIndex = this.level.enemies.indexOf(enemy);
+        if (enemyIndex !== -1) {
+            this.level.enemies.splice(enemyIndex, 1);
+        }
     }
 
     /**

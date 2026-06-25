@@ -6,6 +6,7 @@ class MovableObject extends DrawableObject {
     speed = 0.15;
     othersDirection = false;
     speedY = 0;
+    previousY = 0;
     groundY = 140;
     acceleration = 2.5;
     energy = 100;
@@ -16,6 +17,7 @@ class MovableObject extends DrawableObject {
      */
     applyGravity() {
         setInterval(() => {
+            this.previousY = this.y;
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -84,7 +86,7 @@ class MovableObject extends DrawableObject {
      * @returns {boolean} True when energy is zero.
      */
     isDead() {
-        return this.energy == 0;
+        return this.energy <= 0;
     }
 
     /**

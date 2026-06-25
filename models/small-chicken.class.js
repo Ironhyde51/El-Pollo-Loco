@@ -7,6 +7,7 @@ class SmallChicken extends MovableObject {
     height = 40;
     width = 40;
     energy = 5;
+    isDead = false;
     offsetTop = 2;
     offsetBottom = 1;
     offsetLeft = 0;
@@ -17,6 +18,7 @@ class SmallChicken extends MovableObject {
         'assets/3_enemies_chicken/chicken_small/1_walk/2_w.png',
         'assets/3_enemies_chicken/chicken_small/1_walk/3_w.png'
     ];
+    IMAGE_DEAD = 'assets/3_enemies_chicken/chicken_small/2_dead/dead.png';
 
     /**
      * Creates a small chicken at a random level position and starts its animation.
@@ -25,6 +27,7 @@ class SmallChicken extends MovableObject {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
+        this.loadImages([this.IMAGE_DEAD]);
         this.x = 500 + Math.random() * 1000;
         this.speed = 0.25 + Math.random() * 0.4;
         this.animate();
@@ -35,11 +38,23 @@ class SmallChicken extends MovableObject {
      */
     animate() {
         setInterval(() => {
-            this.moveLeft();
+            if (!this.isDead) {
+                this.moveLeft();
+            }
         }, 1000 / 60);
 
         setInterval(() => {
-            this.playAnimation(this.IMAGES_WALKING);
+            if (!this.isDead) {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
         }, 200);
+    }
+
+    /**
+     * Switches the small chicken to its dead image and stops movement.
+     */
+    die() {
+        this.isDead = true;
+        this.img = this.imageCache[this.IMAGE_DEAD];
     }
 }

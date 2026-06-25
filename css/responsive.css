@@ -1,4 +1,6 @@
-@media (hover: none) and (pointer: coarse) {
+@media (hover: none) and (pointer: coarse),
+(max-width: 760px),
+(max-height: 560px) {
     .touch-controls.touch-controls-visible {
         display: flex;
     }

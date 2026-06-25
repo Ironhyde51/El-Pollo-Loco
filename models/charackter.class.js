@@ -202,7 +202,7 @@ class Character extends MovableObject {
      * @returns {boolean} True when Pepe moved left.
      */
     moveCharacterLeft() {
-        if (!this.world.keyboard.LEFT || this.x <= -610) {
+        if (!this.world.keyboard.LEFT || this.x <= -520) {
             return false;
         }
         this.x -= this.speed;
