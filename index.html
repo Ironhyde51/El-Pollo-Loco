@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <div id="startScreen" class="start-screen" onclick="startGame()" onmouseenter="playIntroMusic()">
+        <div id="startScreen" class="start-screen" onclick="startGame()">
             <img src="assets/9_intro_outro_screens/start/startscreen_1.png" alt="Start El Pollo Loco">
 
             <div class="start-hint">Klicke oder drücke Leertaste zum Starten</div>
@@ -105,26 +105,36 @@
                 Sammle Münzen und Flaschen, weiche Gegnern aus und besiege den Endboss mit geworfenen Salsa-Flaschen.
             </p>
 
-            <div class="info-controls">
-                <div class="info-control-row">
-                    <div class="info-control-icons">
-                        <img src="assets/game_touch_buttons/btn_left.png" alt="Links">
-                        <img src="assets/game_touch_buttons/btn_right.png" alt="Rechts">
-                    </div>
+            <h3 class="info-section-title">Tastatur</h3>
+            <div class="info-control-grid">
+                <div class="info-control-card">
+                    <span class="info-key">←</span>
+                    <span class="info-key">→</span>
                     <span>Laufen</span>
                 </div>
-
-                <div class="info-control-row">
-                    <div class="info-control-icons">
-                        <img src="assets/game_touch_buttons/btn_jump.png" alt="Springen">
-                    </div>
+                <div class="info-control-card">
+                    <span class="info-key info-key-wide">Space</span>
                     <span>Springen</span>
                 </div>
+                <div class="info-control-card">
+                    <span class="info-key">D</span>
+                    <span>Flasche werfen</span>
+                </div>
+            </div>
 
-                <div class="info-control-row">
-                    <div class="info-control-icons">
-                        <img src="assets/game_touch_buttons/btn_throw.png" alt="Werfen">
-                    </div>
+            <h3 class="info-section-title">Touch</h3>
+            <div class="info-control-grid">
+                <div class="info-control-card">
+                    <img src="assets/game_touch_buttons/btn_left.png" alt="Links">
+                    <img src="assets/game_touch_buttons/btn_right.png" alt="Rechts">
+                    <span>Laufen</span>
+                </div>
+                <div class="info-control-card">
+                    <img src="assets/game_touch_buttons/btn_jump.png" alt="Springen">
+                    <span>Springen</span>
+                </div>
+                <div class="info-control-card">
+                    <img src="assets/game_touch_buttons/btn_throw.png" alt="Werfen">
                     <span>Flasche werfen</span>
                 </div>
             </div>
@@ -142,11 +152,6 @@
                 </li>
                 <li>Retry mit Klick auf Winning- oder Lose-Screen</li>
             </ul>
-
-            <p class="info-disclaimer">
-                Dieses Spiel wurde ausschließlich für Lernzwecke programmiert und es werden keinerlei Einnahmen damit
-                erzielt.
-            </p>
         </div>
     </div>
     <script src="models/drawable-object.class.js"></script>
@@ -162,6 +167,10 @@
     <script src="models/statusbar-coin.class.js"></script>
     <script src="models/statusbar-bottle.class.js"></script>
     <script src="models/statusbar-endboss.class.js"></script>
+    <script src="models/world-collision-handler.class.js"></script>
+    <script src="models/world-collectable-handler.class.js"></script>
+    <script src="models/world-enemy-handler.class.js"></script>
+    <script src="models/world-throwable-handler.class.js"></script>
     <script src="models/world.class.js"></script>
     <script src="models/world-draw.class.js"></script>
     <script src="models/keyboard.class.js"></script>

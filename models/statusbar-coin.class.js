@@ -14,6 +14,8 @@ class StatusbarCoin extends DrawableObject {
   ];
 
   percentage = 0;
+  emptyImage;
+  fullImage;
 
   /**
    * Initialises the coin status bar at 0 % and positions it on the HUD.
@@ -21,6 +23,8 @@ class StatusbarCoin extends DrawableObject {
   constructor() {
     super();
     this.loadImages(this.IMAGES);
+    this.emptyImage = this.imageCache[this.IMAGES[0]];
+    this.fullImage = this.imageCache[this.IMAGES[5]];
     this.setPercentage(0);
     this.x = 53;
     this.y = 45;
@@ -34,29 +38,39 @@ class StatusbarCoin extends DrawableObject {
    */
   setPercentage(percentage) {
     this.percentage = Math.max(0, Math.min(100, percentage));
-    this.chooseImage(this.percentage);
+    this.img = this.emptyImage;
   }
 
   /**
-   * Selects and applies the image matching the given percentage.
-   * @param {number} percentage - Value between 0 and 100.
+   * Draws the empty bar and overlays the filled bar based on the current percentage.
+   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
    */
-  chooseImage(percentage) {
-    let index = this.resolveImageIndex(percentage);
-    this.img = this.imageCache[this.IMAGES[index]];
+  draw(ctx) {
+    if (!this.emptyImage.complete || !this.fullImage.complete) {
+      return;
+    }
+    this.drawEmptyBar(ctx);
+    this.drawFilledBar(ctx);
   }
 
   /**
-   * Maps a percentage value to the corresponding image-array index from 0 to 5.
-   * @param {number} percentage - Value between 0 and 100.
-   * @returns {number} Index of the coin status bar image.
+   * Draws the empty coin bar background.
+   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
    */
-  resolveImageIndex(percentage) {
-    if (percentage >= 100) return 5;
-    else if (percentage >= 80) return 4;
-    else if (percentage >= 60) return 3;
-    else if (percentage >= 40) return 2;
-    else if (percentage >= 20) return 1;
-    else return 0;
+  drawEmptyBar(ctx) {
+    ctx.drawImage(this.emptyImage, this.x, this.y, this.width, this.height);
+  }
+
+  /**
+   * Draws the visible filled part of the coin bar.
+   * @param {CanvasRenderingContext2D} ctx - Canvas rendering context.
+   */
+  drawFilledBar(ctx) {
+    let fillWidth = this.width * (this.percentage / 100);
+    if (fillWidth <= 0) {
+      return;
+    }
+    ctx.drawImage(this.fullImage, 0, 0, this.fullImage.width * (this.percentage / 100),
+      this.fullImage.height, this.x, this.y, fillWidth, this.height);
   }
 }

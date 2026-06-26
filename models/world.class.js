@@ -1,5 +1,5 @@
 /**
- * Main game world that connects the character, level, status bars, collisions and drawing logic.
+ * Main game world that connects the character, level, status bars, handlers and drawing logic.
  */
 class World {
     character = new Character();
@@ -7,7 +7,6 @@ class World {
     canvas;
     ctx;
     keyboard;
-    worldDraw;
     camera_x = 0;
     startusBar = new StatusBar();
     statusbarCoin = new StatusbarCoin();
@@ -25,7 +24,6 @@ class World {
     collectedCoins = 0;
     collectedBottles = 0;
     maxBottles = 0;
-    worldDraw = new WorldDraw(this);
 
     /**
      * Creates the game world and starts drawing, collision checks and throwing logic.
@@ -36,16 +34,34 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.loadWorldHelpers();
+        this.loadEndScreenImages();
+        this.maxBottles = this.level.bottles.length;
+        this.draw();
+        this.setWorld();
+        this.collisionHandler.start();
+        this.throwableHandler.startThrowInterval();
+    }
+
+    /**
+     * Creates helper classes that handle separated world responsibilities.
+     */
+    loadWorldHelpers() {
         this.worldDraw = new WorldDraw(this);
+        this.collectableHandler = new WorldCollectableHandler(this);
+        this.enemyHandler = new WorldEnemyHandler(this);
+        this.throwableHandler = new WorldThrowableHandler(this);
+        this.collisionHandler = new WorldCollisionHandler(this);
+    }
+
+    /**
+     * Loads the images used for the game end screens.
+     */
+    loadEndScreenImages() {
         this.gameOverImage = new Image();
         this.gameOverImage.src = 'assets/You won, you lost/Game-Over.png';
         this.winningImage = new Image();
         this.winningImage.src = 'assets/You won, you lost/winning-screen.png';
-        this.maxBottles = this.level.bottles.length;
-        this.draw();
-        this.setWorld();
-        this.checkCollisions();
-        this.checkThrowObjects();
     }
 
     /**
@@ -58,209 +74,6 @@ class World {
                 enemy.world = this;
             }
         });
-    }
-
-    /**
-     * Detects the first time the character gets close to the endboss and starts the showdown.
-     */
-    checkEndbossSeen() {
-        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && !this.endbossWasSeen && this.character.x > endboss.x - 700) {
-            this.endbossWasSeen = true;
-            endboss.startAlert();
-            playShowdownSound();
-        }
-    }
-
-    /**
-     * Starts the interval that checks all gameplay collisions and game-end conditions.
-     */
-    checkCollisions() {
-        setInterval(() => {
-            if (this.gameEnded) {
-                return;
-            }
-            this.checkEndbossSeen();
-            this.checkEndbossAttack();
-            this.checkGameEnd();
-            this.checkEnemyCollisions();
-            this.checkCoinCollisions();
-            this.checkBottleCollisions();
-            this.checkBottleBoxCollisions();
-            this.checkThrowableObjectCollisions();
-            this.removeDestroyedThrowableObjects();
-        }, 50);
-    }
-
-    /**
-     * Removes bottles that finished their splash animation.
-     */
-    removeDestroyedThrowableObjects() {
-        this.throwableObjects = this.throwableObjects.filter((bottle) => !bottle.markedForDeletion);
-    }
-
-    /**
-     * Checks whether thrown bottles hit enemies.
-     */
-    checkThrowableObjectCollisions() {
-        this.throwableObjects.forEach((bottle) => {
-            this.level.enemies.forEach((enemy) => {
-                if (!bottle.isSplashing && !this.isEnemyAlreadyDead(enemy) && this.isCollidingWithOffset(bottle, enemy)) {
-                    this.hitEnemyWithBottle(enemy);
-                    bottle.splash();
-                }
-            });
-        });
-    }
-
-    /**
-     * Checks whether an enemy is already in its death state.
-     * @param {MovableObject} enemy - Enemy that should be checked.
-     * @returns {boolean} True when the enemy should ignore further hits.
-     */
-    isEnemyAlreadyDead(enemy) {
-        return enemy instanceof Endboss ? enemy.isDead() : enemy.isDead;
-    }
-
-    /**
-     * Checks whether Pepe collides with bottle boxes.
-     */
-    checkBottleBoxCollisions() {
-        this.level.bottleBoxes.forEach((bottleBox) => {
-            if (this.isCollidingWithOffset(this.character, bottleBox)) {
-                this.collectBottleBox(bottleBox);
-            }
-        });
-    }
-
-    /**
-     * Checks whether Pepe collects bottles.
-     */
-    checkBottleCollisions() {
-        this.level.bottles.forEach((bottle) => {
-            if (this.isCollidingWithOffset(this.character, bottle)) {
-                this.collectBottle(bottle);
-            }
-        });
-    }
-
-    /**
-     * Checks whether Pepe collects coins.
-     */
-    checkCoinCollisions() {
-        this.level.coins.forEach((coin) => {
-            if (this.isCharacterCollectingCoin(coin)) {
-                this.collectCoin(coin);
-            }
-        });
-    }
-
-    /**
-     * Checks coin collection with a smaller character hitbox.
-     * @param {Coin} coin - Coin that may be collected.
-     * @returns {boolean} True when Pepe's coin hitbox touches the coin.
-     */
-    isCharacterCollectingCoin(coin) {
-        let character = {
-            x: this.character.x,
-            y: this.character.y,
-            width: this.character.width,
-            height: this.character.height,
-            offsetTop: 140,
-            offsetBottom: 55,
-            offsetLeft: 30,
-            offsetRight: 30
-        };
-
-        return this.isCollidingWithOffset(character, coin);
-    }
-
-    /**
-     * Checks collisions between Pepe and all enemies.
-     */
-    checkEnemyCollisions() {
-        if (this.checkStompCollision()) {
-            return;
-        }
-        this.level.enemies.forEach((enemy) => {
-            if (enemy instanceof Endboss) {
-                this.checkEndbossCollision(enemy);
-            } else {
-                this.checkEnemyDamageCollision(enemy);
-            }
-        });
-    }
-
-    /**
-     * Checks whether Pepe jumps on any normal enemy before damage is checked.
-     * @returns {boolean} True when an enemy was stomped.
-     */
-    checkStompCollision() {
-        let enemy = this.findStompedEnemy();
-        if (!enemy) {
-            return false;
-        }
-        this.killEnemy(enemy);
-        this.character.speedY = 20;
-        return true;
-    }
-
-    /**
-     * Finds the first normal enemy that Pepe lands on while falling.
-     * @returns {MovableObject|undefined} Enemy that was stomped.
-     */
-    findStompedEnemy() {
-        return this.level.enemies.find((enemy) =>
-            !(enemy instanceof Endboss) && !enemy.isDead && this.isJumpingOnEnemy(enemy)
-        );
-    }
-
-    /**
-     * Checks whether the endboss attack hits Pepe.
-     * @param {Endboss} endboss - Endboss that may hit Pepe.
-     */
-    checkEndbossCollision(endboss) {
-        if (endboss.isAttacking && this.isCollidingWithOffset(this.character, endboss)) {
-            this.character.hit();
-            this.character.updateLastActionTime();
-            this.startusBar.setPercentage(this.character.energy);
-        }
-    }
-
-    /**
-     * Checks whether Pepe touches a normal enemy from the side.
-     * @param {MovableObject} enemy - Enemy that may damage Pepe.
-     */
-    checkEnemyDamageCollision(enemy) {
-        if (!enemy.isDead && this.isCollidingWithOffset(this.character, enemy)) {
-            this.character.hit();
-            this.character.updateLastActionTime();
-            this.startusBar.setPercentage(this.character.energy);
-        }
-    }
-
-    /**
-     * Removes a collected coin from the level and updates the coin status bar.
-     * @param {Coin} coin - Coin that collided with the character.
-     */
-    collectCoin(coin) {
-        let coinIndex = this.level.coins.indexOf(coin);
-        if (coinIndex === -1) {
-            return;
-        }
-        this.level.coins.splice(coinIndex, 1);
-        playCoinCollectSound();
-        this.collectedCoins++;
-        this.updateCoinStatusbar();
-    }
-
-    /**
-     * Calculates and applies the current coin collection percentage.
-     */
-    updateCoinStatusbar() {
-        let totalCoins = this.collectedCoins + this.level.coins.length;
-        let percentage = totalCoins === 0 ? 0 : (this.collectedCoins / totalCoins) * 100;
-        this.statusbarCoin.setPercentage(percentage);
     }
 
     /**
@@ -279,169 +92,6 @@ class World {
     }
 
     /**
-     * Checks whether the character lands on top of an enemy.
-     * @param {MovableObject} enemy - Enemy that may be jumped on.
-     * @returns {boolean} True when the character hits the enemy from above.
-     */
-    isJumpingOnEnemy(enemy) {
-        let characterHitbox = this.getHitbox(this.character);
-        let enemyHitbox = this.getHitbox(enemy);
-        let previousBottom = this.getPreviousCharacterBottom();
-        return this.isCharacterFallingOnEnemy(characterHitbox, enemyHitbox, previousBottom) &&
-            this.hasEnoughHorizontalOverlap(characterHitbox, enemyHitbox, enemy);
-    }
-
-    /**
-     * Checks whether Pepe is falling into the upper area of an enemy.
-     * @param {{left: number, right: number, top: number, bottom: number}} characterHitbox - Pepe's hitbox.
-     * @param {{left: number, right: number, top: number, bottom: number}} enemyHitbox - Enemy hitbox.
-     * @param {number} previousBottom - Pepe's bottom position from the previous gravity tick.
-     * @returns {boolean} True when Pepe falls into the enemy stomp area.
-     */
-    isCharacterFallingOnEnemy(characterHitbox, enemyHitbox, previousBottom) {
-        return this.character.speedY < 0 &&
-            previousBottom <= enemyHitbox.top + 12 &&
-            characterHitbox.bottom >= enemyHitbox.top - 10 &&
-            characterHitbox.bottom <= enemyHitbox.bottom + 10;
-    }
-
-    /**
-     * Calculates Pepe's previous bottom hitbox position.
-     * @returns {number} Previous bottom position of Pepe's hitbox.
-     */
-    getPreviousCharacterBottom() {
-        return this.character.previousY +
-            this.character.height -
-            (this.character.offsetBottom || 0);
-    }
-
-    /**
-     * Checks whether Pepe's foot center is above the enemy.
-     * @param {{left: number, right: number}} characterHitbox - Pepe's hitbox.
-     * @param {{left: number, right: number}} enemyHitbox - Enemy hitbox.
-     * @param {MovableObject} enemy - Enemy that may be stomped.
-     * @returns {boolean} True when Pepe is horizontally above the enemy.
-     */
-    hasEnoughHorizontalOverlap(characterHitbox, enemyHitbox, enemy) {
-        let characterCenter = characterHitbox.left + (characterHitbox.right - characterHitbox.left) / 2;
-        let tolerance = enemy instanceof SmallChicken ? 18 : 8;
-        return characterCenter >= enemyHitbox.left - tolerance &&
-            characterCenter <= enemyHitbox.right + tolerance;
-    }
-
-    /**
-     * Removes an enemy from the current level.
-     * @param {MovableObject} enemy - Enemy that should be removed.
-     */
-    killEnemy(enemy) {
-        let enemyIndex = this.level.enemies.indexOf(enemy);
-        if (enemyIndex === -1) {
-            return;
-        }
-        if (typeof enemy.die === 'function') {
-            this.removeEnemyAfterDeath(enemy);
-            return;
-        }
-        this.level.enemies.splice(enemyIndex, 1);
-    }
-
-    /**
-     * Shows an enemy death image before removing the enemy from the level.
-     * @param {MovableObject} enemy - Enemy that should play its death state.
-     */
-    removeEnemyAfterDeath(enemy) {
-        if (enemy.isDead) {
-            return;
-        }
-        enemy.die();
-        setTimeout(() => {
-            this.removeEnemyFromLevel(enemy);
-        }, 500);
-    }
-
-    /**
-     * Removes an enemy object from the level enemy array.
-     * @param {MovableObject} enemy - Enemy that should be removed.
-     */
-    removeEnemyFromLevel(enemy) {
-        let enemyIndex = this.level.enemies.indexOf(enemy);
-        if (enemyIndex !== -1) {
-            this.level.enemies.splice(enemyIndex, 1);
-        }
-    }
-
-    /**
-     * Applies a bottle hit to a normal enemy or the endboss.
-     * @param {MovableObject} enemy - Enemy hit by a bottle.
-     */
-    hitEnemyWithBottle(enemy) {
-        if (enemy instanceof Endboss) {
-            this.hitEndboss(enemy);
-        } else {
-            this.killEnemy(enemy);
-        }
-    }
-
-    /**
-     * Applies bottle damage to the endboss and updates the endboss status bar.
-     * @param {Endboss} endboss - Endboss hit by a bottle.
-     */
-    hitEndboss(endboss) {
-        endboss.hitEndboss();
-        this.statusbarEndboss.setPercentage(endboss.energy);
-        if (endboss.isDead()) {
-            this.removeDeadEndboss(endboss);
-        }
-    }
-
-    /**
-     * Removes the dead endboss after the death animation and shows the winning screen.
-     * @param {Endboss} endboss - Endboss that should be removed.
-     */
-    removeDeadEndboss(endboss) {
-        setTimeout(() => {
-            this.killEnemy(endboss);
-            this.showWinningScreen();
-        }, 800);
-    }
-
-    /**
-     * Collects a bottle and updates the bottle status bar.
-     * @param {Bottle} bottle - Bottle that collided with Pepe.
-     */
-    collectBottle(bottle) {
-        let bottleIndex = this.level.bottles.indexOf(bottle);
-        if (bottleIndex === -1) {
-            return;
-        }
-        this.level.bottles.splice(bottleIndex, 1);
-        this.collectedBottles++;
-        this.updateBottleStatusbar();
-    }
-
-    /**
-     * Updates the bottle status bar based on collected bottles.
-     */
-    updateBottleStatusbar() {
-        let percentage = this.maxBottles === 0 ? 0 : (this.collectedBottles / this.maxBottles) * 100;
-        this.statusbarBottle.setPercentage(percentage);
-    }
-
-    /**
-     * Collects a bottle box and refills Pepe's bottles.
-     * @param {BottleBox} bottleBox - Bottle box that collided with Pepe.
-     */
-    collectBottleBox(bottleBox) {
-        let bottleBoxIndex = this.level.bottleBoxes.indexOf(bottleBox);
-        if (bottleBoxIndex === -1) {
-            return;
-        }
-        this.level.bottleBoxes.splice(bottleBoxIndex, 1);
-        this.collectedBottles = this.maxBottles;
-        this.updateBottleStatusbar();
-    }
-
-    /**
      * Builds a collision hitbox from object position, size and offsets.
      * @param {MovableObject|DrawableObject} object - Object whose hitbox is calculated.
      * @returns {{left: number, right: number, top: number, bottom: number}} Calculated hitbox.
@@ -453,87 +103,6 @@ class World {
             top: object.y + (object.offsetTop || 0),
             bottom: object.y + object.height - (object.offsetBottom || 0)
         };
-    }
-
-    /**
-     * Starts the interval that handles bottle throwing.
-     */
-    checkThrowObjects() {
-        setInterval(() => {
-            if (this.gameEnded) {
-                return;
-            }
-            if (this.canThrowBottle()) {
-                this.throwBottle();
-                this.bottleWasThrown = true;
-                this.lastBottleThrowTime = new Date().getTime();
-            }
-            if (!this.keyboard.D) {
-                this.bottleWasThrown = false;
-            }
-        }, 1000 / 60);
-    }
-
-    /**
-     * Checks bottle stock, key input and throw cooldown.
-     * @returns {boolean} True when Pepe can throw a bottle.
-     */
-    canThrowBottle() {
-        let timePassed = new Date().getTime() - this.lastBottleThrowTime;
-
-        return this.keyboard.D &&
-            !this.bottleWasThrown &&
-            this.collectedBottles > 0 &&
-            timePassed >= this.bottleThrowCooldown;
-    }
-
-    /**
-     * Creates and throws a bottle in Pepe's current direction.
-     */
-    throwBottle() {
-        let direction = this.character.othersDirection ? -1 : 1;
-        let x = this.character.othersDirection ? this.character.x + 20 : this.character.x + 100;
-        let y = this.character.y + 100;
-        let bottle = new ThrowableObject(x, y, direction);
-        this.throwableObjects.push(bottle);
-        this.collectedBottles--;
-        this.updateBottleStatusbar();
-        this.character.updateLastActionTime();
-    }
-
-    /**
-     * Starts the endboss attack when Pepe is close enough.
-     */
-    checkEndbossAttack() {
-        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && endboss.alertFinished && this.character.x > endboss.x - 320) {
-            endboss.startAttack();
-        }
-    }
-
-    /**
-     * Checks whether Pepe died and whether the game-over screen should be shown.
-     */
-    checkGameEnd() {
-        if (this.gameEnded) {
-            return;
-        }
-        if (this.character.isDead()) {
-            this.startPepeDeathFall();
-        }
-        if (this.pepeDeathFallStarted && this.character.y > this.canvas.height) {
-            this.showGameOverScreen();
-        }
-    }
-
-    /**
-     * Starts Pepe's death fall once.
-     */
-    startPepeDeathFall() {
-        if (this.pepeDeathFallStarted) {
-            return;
-        }
-        this.pepeDeathFallStarted = true;
     }
 
     /**

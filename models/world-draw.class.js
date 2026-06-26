@@ -22,8 +22,8 @@ class WorldDraw {
         this.clearCanvas();
         this.updateDeathFall();
         this.drawBackground();
-        this.drawHud();
         this.drawMovableObjects();
+        this.drawHud();
         world.ctx.translate(-world.camera_x, 0);
         this.requestNextFrame();
     }

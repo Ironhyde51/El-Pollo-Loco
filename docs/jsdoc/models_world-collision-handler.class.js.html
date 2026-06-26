@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: models/status-bar.class.js</title>
+    <title>JSDoc: Source: models/world-collision-handler.class.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: models/status-bar.class.js</h1>
+    <h1 class="page-title">Source: models/world-collision-handler.class.js</h1>
 
     
 
@@ -27,56 +27,83 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Displays the character health status as an image-based status bar.
- * @extends DrawableObject
+ * Handles the repeated world checks for collisions, boss state and game end state.
  */
-class StatusBar extends DrawableObject {
-
-    IMAGES = [
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/0pro.png',
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/20pro.png',
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/40pro.png',
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/60pro.png',
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/80pro.png',
-        'assets/7_statusbars/1_statusbar/2_statusbar_health/green/100pro.png'
-    ];
-
-    percentage = 100;
-
+class WorldCollisionHandler {
     /**
-     * Creates the health status bar and initializes it with full health.
+     * Creates a collision handler for one world instance.
+     * @param {World} world - Game world that owns the checked objects.
      */
-    constructor() {
-        super();
-        this.loadImages(this.IMAGES);
-        this.x = 20;
-        this.y = 10;
-        this.width = 250;
-        this.height = 50;
-        this.setPercentage(100);
+    constructor(world) {
+        this.world = world;
     }
 
     /**
-     * Updates the health percentage and changes the displayed status bar image.
-     * @param {number} percentage - Health value between 0 and 100.
+     * Starts the interval that checks gameplay collisions and game-end conditions.
      */
-    setPercentage(percentage) {
-        this.percentage = percentage;
-        let path = this.IMAGES[this.resolveImageIndex()];
-        this.img = this.imageCache[path];
+    start() {
+        setInterval(() => {
+            if (this.world.gameEnded) {
+                return;
+            }
+            this.runChecks();
+        }, 50);
     }
 
     /**
-     * Resolves the image index that matches the current health percentage.
-     * @returns {number} Index of the status bar image.
+     * Runs all world checks for one interval tick.
      */
-    resolveImageIndex() {
-        if (this.percentage >= 100) return 5;
-        if (this.percentage >= 80) return 4;
-        if (this.percentage >= 60) return 3;
-        if (this.percentage >= 40) return 2;
-        if (this.percentage > 0) return 1;
-        return 0;
+    runChecks() {
+        this.checkEndbossSeen();
+        this.checkEndbossAttack();
+        this.checkGameEnd();
+        this.world.enemyHandler.checkEnemyCollisions();
+        this.world.collectableHandler.checkCollectableCollisions();
+        this.world.throwableHandler.checkBottleCollisions();
+        this.world.throwableHandler.removeDestroyedBottles();
+    }
+
+    /**
+     * Detects the first time Pepe gets close to the endboss and starts the showdown.
+     */
+    checkEndbossSeen() {
+        let endboss = this.world.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss &amp;&amp; !this.world.endbossWasSeen &amp;&amp; this.world.character.x > endboss.x - 700) {
+            this.world.endbossWasSeen = true;
+            endboss.startAlert();
+            playShowdownSound();
+        }
+    }
+
+    /**
+     * Starts the endboss attack when Pepe is close enough.
+     */
+    checkEndbossAttack() {
+        let endboss = this.world.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endboss &amp;&amp; endboss.alertFinished &amp;&amp; this.world.character.x > endboss.x - 320) {
+            endboss.startAttack();
+        }
+    }
+
+    /**
+     * Checks whether Pepe died and whether the game-over screen should be shown.
+     */
+    checkGameEnd() {
+        if (this.world.character.isDead()) {
+            this.startPepeDeathFall();
+        }
+        if (this.world.pepeDeathFallStarted &amp;&amp; this.world.character.y > this.world.canvas.height) {
+            this.world.showGameOverScreen();
+        }
+    }
+
+    /**
+     * Starts Pepe's death fall once.
+     */
+    startPepeDeathFall() {
+        if (!this.world.pepeDeathFallStarted) {
+            this.world.pepeDeathFallStarted = true;
+        }
     }
 }
 </code></pre>

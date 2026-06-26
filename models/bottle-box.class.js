@@ -5,6 +5,10 @@
 class BottleBox extends MovableObject {
   width = 90;
   height = 90;
+  offsetTop = 4;
+  offsetBottom = 4;
+  offsetLeft = 4;
+  offsetRight = 4;
 
   /**
    * Creates a bottle box at the given x position.

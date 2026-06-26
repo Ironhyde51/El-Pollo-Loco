@@ -78,18 +78,20 @@ class Endboss extends MovableObject {
      */
     animate() {
         setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAttacking) {
-                this.playAnimation(this.IMAGES_ATTACK);
-            } else if (this.isAlerting) {
-                this.playAnimation(this.IMAGES_ALERT);
-            } else {
-                this.playAnimation(this.IMAGES_WALKING);
-            }
+            this.playAnimation(this.getCurrentAnimationImages());
         }, 200);
+    }
+
+    /**
+     * Gets the animation image list matching the current boss state.
+     * @returns {string[]} Image paths for the current animation.
+     */
+    getCurrentAnimationImages() {
+        if (this.isDead()) return this.IMAGES_DEAD;
+        if (this.isHurt()) return this.IMAGES_HURT;
+        if (this.isAttacking) return this.IMAGES_ATTACK;
+        if (this.isAlerting) return this.IMAGES_ALERT;
+        return this.IMAGES_WALKING;
     }
 
     /**

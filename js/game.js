@@ -27,6 +27,16 @@ let allSounds = [
     showdownSound
 ];
 
+let keyMap = {
+    ArrowRight: "RIGHT",
+    ArrowLeft: "LEFT",
+    " ": "SPACE",
+    ArrowUp: "UP",
+    ArrowDown: "DOWN",
+    d: "D",
+    D: "D"
+};
+
 let isMuted = localStorage.getItem('isMuted') === 'true';
 
 /**
@@ -79,7 +89,7 @@ function toggleMute() {
  */
 function playSound(sound, restart = true) {
     if (isMuted) {
-        sound.pause();
+        stopMutedSound(sound);
         return;
     }
     registerSound(sound);
@@ -87,13 +97,35 @@ function playSound(sound, restart = true) {
     if (restart) {
         sound.currentTime = 0;
     }
+    playSoundWithRetry(sound);
+}
+
+/**
+ * Pauses a sound when the global mute state is active.
+ * @param {HTMLAudioElement} sound - Audio object that should be paused.
+ */
+function stopMutedSound(sound) {
+    sound.pause();
+}
+
+/**
+ * Plays a sound and retries once after the browser unlocks audio.
+ * @param {HTMLAudioElement} sound - Audio object that should be played.
+ */
+function playSoundWithRetry(sound) {
     sound.play().catch(() => {
-        setTimeout(() => {
-            if (!isMuted) {
-                sound.play().catch(() => { });
-            }
-        }, 100);
+        setTimeout(() => playSoundAfterDelay(sound), 100);
     });
+}
+
+/**
+ * Plays a delayed sound retry when sound is not muted.
+ * @param {HTMLAudioElement} sound - Audio object that should be played.
+ */
+function playSoundAfterDelay(sound) {
+    if (!isMuted) {
+        sound.play().catch(() => { });
+    }
 }
 
 /**
@@ -311,62 +343,86 @@ document.addEventListener("fullscreenchange", updateFullscreenButton);
 /**
  * Handles keyboard input for starting, restarting and controlling the game.
  */
-document.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", handleKeyDown);
+
+/**
+ * Handles keyboard input for starting, restarting and controlling the game.
+ * @param {KeyboardEvent} event - Pressed keyboard event.
+ */
+function handleKeyDown(event) {
+    if (handleGameStateKey(event)) {
+        return;
+    }
+    setKeyboardKey(event, true);
+}
+
+/**
+ * Handles start and retry shortcuts before gameplay input is processed.
+ * @param {KeyboardEvent} event - Pressed keyboard event.
+ * @returns {boolean} True when the key was handled.
+ */
+function handleGameStateKey(event) {
     if (event.key == " " && world && world.gameEnded) {
         event.preventDefault();
         restartGame();
-        return;
+        return true;
     }
     if (event.key == " " && !gameStarted) {
         event.preventDefault();
         startGame();
-        return;
+        return true;
     }
-    if (event.key == "ArrowRight") {
-        keyboard.RIGHT = true;
-    }
-    if (event.key == "ArrowLeft") {
-        keyboard.LEFT = true;
-    }
-    if (event.key == " ") {
-        keyboard.SPACE = true;
-    }
-    if (event.key == "ArrowUp") {
-        keyboard.UP = true;
-    }
-    if (event.key == "ArrowDown") {
-        keyboard.DOWN = true;
-    }
-    if (event.key == "d" || event.key == "D") {
-        keyboard.D = true;
-    }
-});
+    return false;
+}
 
 /**
  * Resets keyboard input states when movement or action keys are released.
+ * @param {KeyboardEvent} event - Released keyboard event.
  */
-document.addEventListener("keyup", (event) => {
-    if (event.key == "ArrowRight") {
-        keyboard.RIGHT = false;
+document.addEventListener("keyup", handleKeyUp);
+
+/**
+ * Resets keyboard input states when movement or action keys are released.
+ * @param {KeyboardEvent} event - Released keyboard event.
+ */
+function handleKeyUp(event) {
+    setKeyboardKey(event, false);
+}
+
+/**
+ * Sets the keyboard state matching the given key event.
+ * @param {KeyboardEvent} event - Keyboard event to read.
+ * @param {boolean} isPressed - New pressed state.
+ */
+function setKeyboardKey(event, isPressed) {
+    let keyName = getKeyboardProperty(event.key);
+    if (keyName) {
+        keyboard[keyName] = isPressed;
     }
-    if (event.key == "ArrowLeft") {
-        keyboard.LEFT = false;
-    }
-    if (event.key == " ") {
-        keyboard.SPACE = false;
-    }
-    if (event.key == "ArrowUp") {
-        keyboard.UP = false;
-    }
-    if (event.key == "ArrowDown") {
-        keyboard.DOWN = false;
-    }
-    if (event.key == "d" || event.key == "D") {
-        keyboard.D = false;
-    }
-});
+}
+
+/**
+ * Maps a pressed key to the matching keyboard state property.
+ * @param {string} key - Keyboard event key value.
+ * @returns {string|undefined} Keyboard property name.
+ */
+function getKeyboardProperty(key) {
+    return keyMap[key];
+}
 
 /**
  * Applies the saved mute setting when the page loads.
  */
 applyMuteState();
+
+/**
+ * Registers the intro music hover event for the start screen.
+ */
+function registerStartScreenHover() {
+    let startScreen = document.getElementById("startScreen");
+    if (startScreen) {
+        startScreen.addEventListener("mouseenter", playIntroMusic);
+    }
+}
+
+registerStartScreenHover();

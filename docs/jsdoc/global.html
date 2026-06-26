@@ -156,7 +156,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line46">line 46</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -244,7 +244,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line259">line 259</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line291">line 291</a>
     </li></ul></dd>
     
 
@@ -269,6 +269,168 @@
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getKeyboardProperty"><span class="type-signature"></span>getKeyboardProperty<span class="signature">(key)</span><span class="type-signature"> &rarr; {string|undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Maps a pressed key to the matching keyboard state property.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Keyboard event key value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line409">line 409</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Keyboard property name.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -332,7 +494,440 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line266">line 266</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line298">line 298</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="handleGameStateKey"><span class="type-signature"></span>handleGameStateKey<span class="signature">(event)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handles start and retry shortcuts before gameplay input is processed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Pressed keyboard event.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line364">line 364</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    True when the key was handled.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="handleKeyDown"><span class="type-signature"></span>handleKeyDown<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handles keyboard input for starting, restarting and controlling the game.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Pressed keyboard event.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line352">line 352</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="handleKeyUp"><span class="type-signature"></span>handleKeyUp<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Resets keyboard input states when movement or action keys are released.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Released keyboard event.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line388">line 388</a>
     </li></ul></dd>
     
 
@@ -420,7 +1015,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line231">line 231</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line263">line 263</a>
     </li></ul></dd>
     
 
@@ -508,7 +1103,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line245">line 245</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line277">line 277</a>
     </li></ul></dd>
     
 
@@ -596,7 +1191,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line209">line 209</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line241">line 241</a>
     </li></ul></dd>
     
 
@@ -772,7 +1367,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line252">line 252</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line284">line 284</a>
     </li></ul></dd>
     
 
@@ -860,7 +1455,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line111">line 111</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -948,7 +1543,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line152">line 152</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line184">line 184</a>
     </li></ul></dd>
     
 
@@ -1036,7 +1631,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line129">line 129</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -1124,7 +1719,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line136">line 136</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line168">line 168</a>
     </li></ul></dd>
     
 
@@ -1212,7 +1807,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line159">line 159</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -1404,7 +1999,281 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line80">line 80</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line90">line 90</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="playSoundAfterDelay"><span class="type-signature"></span>playSoundAfterDelay<span class="signature">(sound)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Plays a delayed sound retry when sound is not muted.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sound</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLAudioElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Audio object that should be played.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line125">line 125</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="playSoundWithRetry"><span class="type-signature"></span>playSoundWithRetry<span class="signature">(sound)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Plays a sound and retries once after the browser unlocks audio.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sound</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLAudioElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Audio object that should be played.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line115">line 115</a>
     </li></ul></dd>
     
 
@@ -1492,7 +2361,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line144">line 144</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line176">line 176</a>
     </li></ul></dd>
     
 
@@ -1629,7 +2498,95 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line36">line 36</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="registerStartScreenHover"><span class="type-signature"></span>registerStartScreenHover<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Registers the intro music hover event for the start screen.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line421">line 421</a>
     </li></ul></dd>
     
 
@@ -1717,7 +2674,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line166">line 166</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line198">line 198</a>
     </li></ul></dd>
     
 
@@ -1805,7 +2762,167 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line194">line 194</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line226">line 226</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setKeyboardKey"><span class="type-signature"></span>setKeyboardKey<span class="signature">(event, isPressed)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the keyboard state matching the given key event.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Keyboard event to read.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isPressed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">New pressed state.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line397">line 397</a>
     </li></ul></dd>
     
 
@@ -2003,7 +3120,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line224">line 224</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line256">line 256</a>
     </li></ul></dd>
     
 
@@ -2091,7 +3208,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line238">line 238</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line270">line 270</a>
     </li></ul></dd>
     
 
@@ -2179,7 +3296,144 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line177">line 177</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line209">line 209</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stopMutedSound"><span class="type-signature"></span>stopMutedSound<span class="signature">(sound)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Pauses a sound when the global mute state is active.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sound</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLAudioElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Audio object that should be paused.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line107">line 107</a>
     </li></ul></dd>
     
 
@@ -2316,7 +3570,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line103">line 103</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line135">line 135</a>
     </li></ul></dd>
     
 
@@ -2404,7 +3658,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line283">line 283</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line315">line 315</a>
     </li></ul></dd>
     
 
@@ -2492,7 +3746,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line69">line 69</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -2580,7 +3834,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line296">line 296</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line328">line 328</a>
     </li></ul></dd>
     
 
@@ -2668,7 +3922,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line56">line 56</a>
+        <a href="js_game.js.html">js/game.js</a>, <a href="js_game.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -2714,13 +3968,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldDraw.html">WorldDraw</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#shouldBlockTouchInput">shouldBlockTouchInput</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Bottle.html">Bottle</a></li><li><a href="BottleBox.html">BottleBox</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Clouds.html">Clouds</a></li><li><a href="Coin.html">Coin</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MovableObject.html">MovableObject</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="StatusBar.html">StatusBar</a></li><li><a href="StatusbarBottle.html">StatusbarBottle</a></li><li><a href="StatusbarCoin.html">StatusbarCoin</a></li><li><a href="StatusbarEndboss.html">StatusbarEndboss</a></li><li><a href="ThrowableObject.html">ThrowableObject</a></li><li><a href="World.html">World</a></li><li><a href="WorldCollectableHandler.html">WorldCollectableHandler</a></li><li><a href="WorldCollisionHandler.html">WorldCollisionHandler</a></li><li><a href="WorldDraw.html">WorldDraw</a></li><li><a href="WorldEnemyHandler.html">WorldEnemyHandler</a></li><li><a href="WorldThrowableHandler.html">WorldThrowableHandler</a></li></ul><h3>Global</h3><ul><li><a href="global.html#applyMuteState">applyMuteState</a></li><li><a href="global.html#closeInfoModal">closeInfoModal</a></li><li><a href="global.html#getKeyboardProperty">getKeyboardProperty</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#handleGameStateKey">handleGameStateKey</a></li><li><a href="global.html#handleKeyDown">handleKeyDown</a></li><li><a href="global.html#handleKeyUp">handleKeyUp</a></li><li><a href="global.html#hideHomeButton">hideHomeButton</a></li><li><a href="global.html#hideTouchControls">hideTouchControls</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initLevel1">initLevel1</a></li><li><a href="global.html#openInfoModal">openInfoModal</a></li><li><a href="global.html#playBackgroundMusic">playBackgroundMusic</a></li><li><a href="global.html#playCoinCollectSound">playCoinCollectSound</a></li><li><a href="global.html#playIntroMusic">playIntroMusic</a></li><li><a href="global.html#playLostSound">playLostSound</a></li><li><a href="global.html#playShowdownSound">playShowdownSound</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#playSoundAfterDelay">playSoundAfterDelay</a></li><li><a href="global.html#playSoundWithRetry">playSoundWithRetry</a></li><li><a href="global.html#playWinningSound">playWinningSound</a></li><li><a href="global.html#registerSound">registerSound</a></li><li><a href="global.html#registerStartScreenHover">registerStartScreenHover</a></li><li><a href="global.html#restartBackgroundMusic">restartBackgroundMusic</a></li><li><a href="global.html#restartGame">restartGame</a></li><li><a href="global.html#setKeyboardKey">setKeyboardKey</a></li><li><a href="global.html#shouldBlockTouchInput">shouldBlockTouchInput</a></li><li><a href="global.html#showHomeButton">showHomeButton</a></li><li><a href="global.html#showTouchControls">showTouchControls</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#stopMutedSound">stopMutedSound</a></li><li><a href="global.html#stopSound">stopSound</a></li><li><a href="global.html#toggleFullscreen">toggleFullscreen</a></li><li><a href="global.html#toggleMute">toggleMute</a></li><li><a href="global.html#updateFullscreenButton">updateFullscreenButton</a></li><li><a href="global.html#updateMuteButton">updateMuteButton</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jun 25 2026 10:55:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jun 26 2026 11:05:02 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -283,17 +283,31 @@ class Character extends MovableObject {
      */
     playMovementSounds(isMoving) {
         let isAboveGround = this.isAboveGround();
+        this.playWalkingSound(isMoving, isAboveGround);
+        this.playLandingSound(isAboveGround);
+        this.wasAboveGround = isAboveGround;
+    }
 
+    /**
+     * Plays or pauses the walking sound.
+     * @param {boolean} isMoving - True when Pepe is moving.
+     * @param {boolean} isAboveGround - True when Pepe is in the air.
+     */
+    playWalkingSound(isMoving, isAboveGround) {
         if (isMoving && !isAboveGround) {
             playSound(this.walking_sound, false);
         } else {
             this.walking_sound.pause();
         }
+    }
 
+    /**
+     * Plays the landing sound when Pepe touches the ground.
+     * @param {boolean} isAboveGround - True when Pepe is in the air.
+     */
+    playLandingSound(isAboveGround) {
         if (this.wasAboveGround && !isAboveGround) {
             playSound(this.landing_sound);
         }
-
-        this.wasAboveGround = isAboveGround;
     }
 }
